@@ -1,15 +1,16 @@
-const app = require("express")();
+const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const bodyParser = require("body-parser");
-const ses = require("express-session");
+const path = require("path");
+const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const cors = require("cors");
 
-// // GLOBALS //
+//initialize the app
+const app = express();
 
-let options = { secret: "uu-assignment-3" };
-let curentSession;
+// // GLOBALS //
 
 // Set up db
 const db = new sqlite3.Database("./database.db");
@@ -48,61 +49,97 @@ const db = new sqlite3.Database("./database.db");
 
 // MIDDLEWARES
 
+// static files
+const staticPath = path.join(__dirname, "public");
+app.use(express.static(staticPath));
+// app.use("/static", express.static(path.join(__dirname, "public")));
+
 // Set up bodyParser middleware to parse request bodies
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Set up cookie parser middleware
 app.use(cookieParser());
 
 // // set up for session middleware (creates: sid)
-app.use(ses(options));
+let options = {
+  secret: "uu-assignment-3",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: new Date(Date.now() + 30 * 1000), // 30 sec
+    maxAge: 30 * 1000, // 30sec
+    sameSite: "strict",
+    secure: true,
+  },
+};
+app.use(session(options));
 
 // Set Up cros
 app.use(cors());
 
 // ROUTES
 
-// 'get'
-app.use(morgan("tiny")).get("/users", (req, res) => {
-  const requestCookie = req.cookies;
+//login.html
+app.use(morgan("tiny")).get("/login.html", (req, res) => {
+  const requestCookie = req.cookies.user;
+  const session = req.session;
+  console.log(session, requestCookie);
 
-  if (requestCookie) {
-    console.log("requestCookie", requestCookie);
+  if (requestCookie !== undefined && session) {
+    res.status(200).send("Welcome", requestCookie.username.name);
+  } else {
+    res.status(200).send("/login.html");
+  }
+});
+
+// 'get users'
+app.use(morgan("tiny")).get("/users", (req, res) => {
+  const requestCookie = req.cookies.user;
+  const session = req.session;
+  console.log(session, requestCookie);
+
+  if (requestCookie !== undefined && session) {
     db.all("SELECT * FROM users", (err, rows) => {
       if (err) {
         console.error(err.message);
       } else {
-        console.log(rows);
+        res.status(200).send(rows);
       }
     });
-    res.send(requestCookie);
+  } else {
+    res.status(400).send("Login to see users");
   }
 });
 
 // 'login'
-app.use(morgan("tiny")).post("/users/login", (req, res) => {
+app.use(morgan("tiny")).post("/login", (req, res) => {
   const { email, password } = req.body;
 
-  db.get(
-    `SELECT * FROM users WHERE email = ? AND password = ?`,
-    [email, password],
-    (err, row) => {
-      if (err) {
-        console.error(err.message);
-        res.status(500).send("Server error");
-      } else if (row) {
-        res.cookie("username", row, {
-          maxAge: 365 * 24 * 60 * 60 * 1000,
-        });
-        res.setHeader("Content-Type", "application/json");
-        res.status(200).send(row);
-      } else {
-        res.status(401).send("Invalid email or password");
+  if (email) {
+    db.get(
+      `SELECT * FROM users WHERE email = ? AND password = ?`,
+      [email, password],
+      (err, row) => {
+        if (err) {
+          console.error(err.message);
+          res.status(500).send("Server error");
+        } else if (row) {
+          //set cookie
+          res.cookie("user", row, {
+            maxAge: 10 * 1000, //10 sec
+          });
+          // res.setHeader("Content-Type", "application/json");
+          res.status(200).send(row);
+        } else {
+          res.status(401).send("Invalid email or password");
+        }
       }
-    }
-  );
+    );
+  } else {
+    res.status(400).send("Enter a valid email or password");
+  }
 });
 
 // 'register'
@@ -132,6 +169,9 @@ app.use(morgan("tiny")).post("/users/register", (req, res) => {
             console.error(err.message);
             res.status(500).send("Error inserting user data into the database");
           } else {
+            res.cookie("user", row, {
+              maxAge: 10 * 1000, //10 sec
+            });
             res.status(200).send("User data added successfully");
           }
         }
@@ -154,6 +194,23 @@ app.use(morgan("tiny")).post("/users/register", (req, res) => {
     }
     console.log("Database connection closed");
   });
+});
+
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.clearCookie("connect.sid"); // clear the session cookie
+      res.clearCookie("user"); // Delete the user cookie
+      res.redirect("/login.html");
+    }
+  });
+});
+
+// not found
+app.use((request, response) => {
+  response.status(404).send("Page not found!");
 });
 
 //listen
