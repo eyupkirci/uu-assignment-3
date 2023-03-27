@@ -68,8 +68,8 @@ let options = {
   resave: false,
   saveUninitialized: true,
   cookie: {
-    expires: new Date(Date.now() + 30 * 1000), // 30 sec
-    maxAge: 30 * 1000, // 30sec
+    expires: new Date(Date.now() + 60 * 60 * 1000), // 1h
+    maxAge: 60 * 60 * 1000, // 1h
     sameSite: "strict",
     secure: true,
   },
@@ -109,7 +109,7 @@ app.use(morgan("tiny")).get("/users", (req, res) => {
       }
     });
   } else {
-    res.status(400).send("Login to see users");
+    res.status(401).send("Login to see users");
   }
 });
 
@@ -128,7 +128,7 @@ app.use(morgan("tiny")).post("/login", (req, res) => {
         } else if (row) {
           //set cookie
           res.cookie("user", row, {
-            maxAge: 10 * 1000, //10 sec
+            maxAge: 5 * 60 * 1000, // 5 min
           });
           // res.setHeader("Content-Type", "application/json");
           res.status(200).send(row);
@@ -145,6 +145,7 @@ app.use(morgan("tiny")).post("/login", (req, res) => {
 // 'register'
 app.use(morgan("tiny")).post("/users/register", (req, res) => {
   const userData = req.body;
+  const { email, password } = req.body;
   console.log("register parameters: ", userData);
 
   // Connect to the existing "users" database
@@ -169,21 +170,31 @@ app.use(morgan("tiny")).post("/users/register", (req, res) => {
             console.error(err.message);
             res.status(500).send("Error inserting user data into the database");
           } else {
-            res.cookie("user", row, {
-              maxAge: 10 * 1000, //10 sec
-            });
-            res.status(200).send("User data added successfully");
+            db.get(
+              `SELECT * FROM users WHERE email = ? AND password = ?`,
+              [email, password],
+              (err, row) => {
+                if (err) {
+                  console.error(err.message);
+                  res.status(500).send("Server error");
+                } else if (row) {
+                  //set cookie
+                  res.cookie("user", row, {
+                    maxAge: 5 * 60 * 1000, // 5 min
+                  });
+                  // res.setHeader("Content-Type", "application/json");
+                  res.status(200).send({
+                    message: "User data added successfully",
+                    user: row,
+                  });
+                } else {
+                  res.status(401).send("Invalid email or password");
+                }
+              }
+            );
           }
         }
       );
-    }
-  });
-
-  db.all("SELECT * FROM users", (err, rows) => {
-    if (err) {
-      console.error(err.message);
-    } else {
-      console.log("rows", rows);
     }
   });
 
