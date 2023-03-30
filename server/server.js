@@ -7,14 +7,16 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const cors = require("cors");
 
+// // GLOBALS //
+
 //initialize the app
 const app = express();
 
-// // GLOBALS //
-
 // Set up db
 const db = new sqlite3.Database("./database.db");
+
 // // db initialized
+
 // db.serialize(() => {
 //   // Create users table
 //   db.run(`CREATE TABLE IF NOT EXISTS users (
@@ -50,12 +52,13 @@ const db = new sqlite3.Database("./database.db");
 // MIDDLEWARES
 
 // static files
+
 const staticPath = path.join(__dirname, "public");
 app.use(express.static(staticPath));
+
 // app.use("/static", express.static(path.join(__dirname, "public")));
 
 // Set up bodyParser middleware to parse request bodies
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -81,8 +84,19 @@ app.use(cors());
 
 // ROUTES
 
+// 'movies'
+app.use(morgan("tiny")).get("/movies", (req, res) => {
+  db.all("SELECT * FROM movies", (err, rows) => {
+    if (err) {
+      console.error(err.message);
+    } else {
+      res.status(200).send(rows);
+    }
+  });
+});
+
 //login.html
-app.use(morgan("tiny")).get("/login.html", (req, res) => {
+app.use(morgan("tiny")).get("/index.html", (req, res) => {
   const requestCookie = req.cookies.user;
   const session = req.session;
   console.log(session, requestCookie);
@@ -207,6 +221,7 @@ app.use(morgan("tiny")).post("/users/register", (req, res) => {
   });
 });
 
+// 'logout'
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -228,5 +243,5 @@ app.use((request, response) => {
 const PORT = 3001;
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server listening on port http://localhost:${PORT}`);
 });
