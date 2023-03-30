@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>login</title>
+    <title>User Info</title>
     <script src="./index.js" defer></script>
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -12,45 +12,23 @@
     <header>
       <nav>
         <div id="nav_logo">
-          <h3>Tickets.com</h3>
+          <h2>Tickets.com</h2>
         </div>
         <label for="drop" class="toggle">
           <img
             id="toggle_img"
             src="./assets/menu-burger.png"
-            alt="Menu"
+            alt="Header menu"
             width="24px"
           />
         </label>
         <input type="checkbox" id="drop" />
-        <ul class="menu"></ul>
+        <ul class="menu" id="header-menu">
+          <!-- menu-list-items -->
+        </ul>
       </nav>
     </header>
-    <section
-      style="
-        border: 1px solid black;
-        margin: auto;
-        width: 320px;
-        padding: 1rem;
-        border-radius: 5px;
-      "
-    >
-      <h2>Login</h2>
-      <form id="login-form">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required /><br /><br />
-        <label for="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          required
-        /><br /><br />
-        <input type="submit" value="Login" id="login-button" /><br /><br />
-      </form>
-      <p>Not user? <a href="./register.html">Sign Up</a></p>
-    </section>
-    <article></article>
+    <main><h2>User Info</h2></main>
     <footer>
       <div id="footer_left">
         <p class="developers">Developed by Fatih - Eyup - Mark</p>

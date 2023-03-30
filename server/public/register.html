@@ -5,9 +5,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register</title>
+    <link rel="stylesheet" href="style.css" />
     <script src="index.js" defer></script>
   </head>
   <body>
+    <header>
+      <nav>
+        <div id="nav_logo">
+          <h2>MovieTickets.com</h2>
+        </div>
+        <label for="drop" class="toggle">
+          <img
+            id="toggle_img"
+            src="./assets/menu-burger.png"
+            alt="Header menu"
+            width="24px"
+          />
+        </label>
+        <input type="checkbox" id="drop" />
+        <ul class="menu" id="header-menu">
+          <!-- menu-list-items -->
+        </ul>
+      </nav>
+    </header>
     <section
       style="
         border: 1px solid black;
@@ -39,17 +59,28 @@
         <label for="address">Address:</label>
         <textarea id="address" name="address" required></textarea><br /><br />
 
-        <label for="creditCard">Credit Card Number:</label>
+        <label for="credit_card">Credit Card Number:</label>
         <input
           type="text"
-          id="creditCard"
-          name="creditCard"
+          id="credit_card"
+          name="credit_card"
           required
         /><br /><br />
 
-        <input type="submit" value="Submit" /><br />
+        <input type="submit" value="Submit" id="register-button" /><br />
       </form>
       <p>User? <a href="./login.html">Login</a></p>
     </section>
+    <footer>
+      <div id="footer_left">
+        <p class="developers">Developed by Fatih - Eyup - Mark</p>
+      </div>
+      <div id="footer_middle">
+        <p>&copy 2023</p>
+      </div>
+      <div id="footer_right">
+        <p>UU Assignment II</p>
+      </div>
+    </footer>
   </body>
 </html>
