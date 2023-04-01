@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div id="nav_logo">
+          <h2>MovieTickets.com</h2>
+        </div>
+        <label for="drop" class="toggle">
+          <img
+            id="toggle_img"
+            src="/assets/menu-burger.png"
+            alt="Header menu"
+            width="24px"
+          />
+        </label>
+        <input type="checkbox" id="drop" />
+        <ul class="menu" id="header-menu">
+          <li><a href="/">Home</a></li>
+          <% if (user && user.name) { %>
+          <li><a href="/logout">Logout</a></li>
+          <li><a href="/user"><%= user.name %></a></li>
+          <% } else { %>
+          <li><a href="/login">Login</a></li>
+          <% } %>
+        </ul>
+      </nav>
+    </header>
+
+    <section id="login-section">
+      <h2>Login</h2>
+      <form id="login-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required /><br /><br />
+        <span id="email-error"></span><br />
+        <label for="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+        /><br /><br />
+        <input type="submit" value="Login" id="login-button" /><br /><br />
+      </form>
+      <p>Not user? <a href="/register.html">Sign Up</a></p>
+    </section>
+    <script>
+      const loginForm = document.getElementById("login-form");
+      const loginButton = document.getElementById("login-button");
+
+      const handleLogin = (e) => {
+        e.preventDefault();
+        const formData = new FormData(loginForm);
+        const data = Object.fromEntries(formData.entries());
+
+        fetch("http://localhost:3001/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            console.log(response);
+            console.log(
+              "🚀 ~ file: login.ejs:71 ~ .then ~ response:",
+              response
+            );
+            if (response.token) {
+              localStorage.setItem("token", response.token);
+              document.cookie = `token=${response.token}`;
+              window.location.href = "/";
+            } else {
+              const emailError = document.getElementById("email-error");
+              const mesText = response.errors.filter(
+                (item) => item.param === "email"
+              );
+              console.log(mesText);
+              emailError.innerText = mesText[0]?.msg;
+            }
+          });
+      };
+
+      loginButton.addEventListener("click", (e) => {
+        handleLogin(e);
+      });
+    </script>
+  </body>
+</html>
