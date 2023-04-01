@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div id="nav_logo">
+          <h2>MovieTickets.com</h2>
+        </div>
+        <label for="drop" class="toggle">
+          <img
+            id="toggle_img"
+            src="/assets/menu-burger.png"
+            alt="Header menu"
+            width="24px"
+          />
+        </label>
+        <input type="checkbox" id="drop" />
+        <ul class="menu" id="header-menu">
+          <li><a href="/">Home</a></li>
+          <% if (user) { %>
+          <li><a href="/user"><%= user %></a></li>
+          <li><a href="/" id="logout-button">Logout</a></li>
+          <% } else { %>
+          <li><a href="/login" id="login-button">Login</a></li>
+          <% } %>
+        </ul>
+      </nav>
+    </header>
+
+    <section id="movie-section">
+      <% if (movies.length) { %> <% movies.forEach(movie => { %>
+
+      <div class="movie-card" key="<%= movie.id %>">
+        <img
+          class="movie-card__image"
+          src="<%= movie.imageurl %>"
+          alt="<%= movie.title %> poster"
+        />
+        <div class="movie-card__info">
+          <h2 class="movie-card__title"><%= movie.title %></h2>
+          <p class="movie-card__imdb">IMDb Rating: <%= movie.imdbrating %></p>
+          <button>Buy</button>
+        </div>
+      </div>
+
+      <% }) %> <% } else { %>
+      <p>No movies found.</p>
+      <% } %>
+    </section>
+
+    <script>
+      const logoutButton = document.getElementById("logout-button");
+
+      const handleLogout = () => {
+        if (confirm("Are you sure you want to log out?")) {
+          fetch("http://localhost:3001/api/logout", {
+            method: "GET",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+          })
+            .then((response) => {
+              // document.cookie = `token=""`;
+              console.log("User logged out!");
+            })
+            .then(() => (window.location.href = "/"))
+            .catch((error) => console.error(error));
+        }
+      };
+
+      logoutButton.addEventListener("click", handleLogout);
+    </script>
+  </body>
+</html>
