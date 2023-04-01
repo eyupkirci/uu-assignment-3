@@ -22,11 +22,11 @@
         <input type="checkbox" id="drop" />
         <ul class="menu" id="header-menu">
           <li><a href="/">Home</a></li>
-          <% if (user && user.name) { %>
-          <li><a href="/logout">Logout</a></li>
-          <li><a href="/user"><%= user.name %></a></li>
+          <% if (user?.username) { %>
+          <li><a href="/"><%= user?.username %></a></li>
+          <li><a href="/" id="nav-logout-button">Logout</a></li>
           <% } else { %>
-          <li><a href="/login">Login</a></li>
+          <li><a href="/login" id="nav-login-button">Login</a></li>
           <% } %>
         </ul>
       </nav>
@@ -45,13 +45,13 @@
           name="password"
           required
         /><br /><br />
-        <input type="submit" value="Login" id="login-button" /><br /><br />
+        <input type="submit" value="Login" id="form-login-button"" /><br /><br />
       </form>
       <p>Not user? <a href="/register.html">Sign Up</a></p>
     </section>
     <script>
       const loginForm = document.getElementById("login-form");
-      const loginButton = document.getElementById("login-button");
+      const loginButton = document.getElementById("form-login-button");
 
       const handleLogin = (e) => {
         e.preventDefault();
