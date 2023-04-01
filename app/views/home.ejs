@@ -22,8 +22,8 @@
         <input type="checkbox" id="drop" />
         <ul class="menu" id="header-menu">
           <li><a href="/">Home</a></li>
-          <% if (user) { %>
-          <li><a href="/user"><%= user %></a></li>
+          <% if (user?.username) { %>
+          <li><a href="/"><%= user?.username %></a></li>
           <li><a href="/" id="logout-button">Logout</a></li>
           <% } else { %>
           <li><a href="/login" id="login-button">Login</a></li>
@@ -44,7 +44,7 @@
         <div class="movie-card__info">
           <h2 class="movie-card__title"><%= movie.title %></h2>
           <p class="movie-card__imdb">IMDb Rating: <%= movie.imdbrating %></p>
-          <button>Buy</button>
+          <button>Details</button>
         </div>
       </div>
 
@@ -66,10 +66,12 @@
             },
           })
             .then((response) => {
-              // document.cookie = `token=""`;
               console.log("User logged out!");
+              if (response.ok) {
+                fetch("http://localhost:3001/");
+              }
             })
-            .then(() => (window.location.href = "/"))
+            // .then(() => (window.location.href = "/"))
             .catch((error) => console.error(error));
         }
       };

@@ -15,16 +15,22 @@ dotenv.config();
 /* GET home page. */
 router.use(morgan("dev")).get("/", authController, function (req, res) {
   const user = req.user;
+  console.log("🚀 ~ file: index.js:19 ~ user:", user);
 
   db.all("SELECT * FROM movies", (err, movies) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Internal Server Error");
+    if (err) res.status(500).send("Internal Server Error");
+
+    if (user?.username) {
+      res.render("home", {
+        title: "Home Page",
+        movies: movies,
+        user: user,
+      });
     } else {
       res.render("home", {
         title: "Home Page",
         movies: movies,
-        user: user.username,
+        user: {},
       });
     }
   });
@@ -32,7 +38,7 @@ router.use(morgan("dev")).get("/", authController, function (req, res) {
 
 // login page
 router.use(morgan("dev")).get("/login", (req, res) => {
-  res.render("login", { title: "Login Page", user: "" });
+  res.render("login", { title: "Login Page", user: {} });
 });
 
 // api/login
@@ -47,7 +53,9 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+
     const { email, password } = req.body;
+    console.log("🚀 ~ file: index.js:57 ~ password:", password);
 
     // hash pass
 
@@ -56,7 +64,7 @@ router.post(
       [email, password],
       async (err, user) => {
         if (err) {
-          console.error(err.message);
+          console.log("🚀 ~ file: index.js:68 ~ err.message:", err.message);
           res.status(500).send("Server error");
         } else {
           // jwt
