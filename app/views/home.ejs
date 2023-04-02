@@ -44,7 +44,12 @@
         <div class="movie-card__info">
           <h2 class="movie-card__title"><%= movie.title %></h2>
           <p class="movie-card__imdb">IMDb Rating: <%= movie.imdbrating %></p>
-          <button>Details</button>
+
+          <a href="/movies/<%= movie.id %>">
+            <button class="movie-detail-button" id="<%= movie.id %>">
+              Details
+            </button>
+          </a>
         </div>
       </div>
 
@@ -69,6 +74,7 @@
               console.log("User logged out!");
               if (response.ok) {
                 fetch("http://localhost:3001/");
+                location.href = "/";
               }
             })
             // .then(() => (window.location.href = "/"))

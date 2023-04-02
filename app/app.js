@@ -10,7 +10,7 @@ const jwt = require("jsonwebtoken");
 // routes
 
 const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/users");
+const apiRouter = require("./routes/api");
 
 // the view engine
 
@@ -47,7 +47,7 @@ app.use(
 // Routes
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/api", apiRouter);
 
 // not found
 app.use((req, res) => {
