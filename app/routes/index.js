@@ -1,112 +1,71 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const { check, validationResult } = require("express-validator");
 const authController = require("../controller/authController");
 const router = express.Router();
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./utils/database.db");
 const dotenv = require("dotenv");
+const { getMovies, getMovie } = require("../helper/fetchMovieData");
 
 dotenv.config();
 
 /* GET home page. */
-router.use(morgan("dev")).get("/", authController, function (req, res) {
+// private & public route
+router.use(morgan("dev")).get("/", authController, async (req, res) => {
   const user = req.user;
-  console.log("🚀 ~ file: index.js:19 ~ user:", user);
+  const movies = await getMovies(db);
 
-  db.all("SELECT * FROM movies", (err, movies) => {
-    if (err) res.status(500).send("Internal Server Error");
+  if (user == {}) {
+    res.render("home", {
+      title: "Home Page",
+      movies: movies,
+      user: {},
+    });
+  } else {
+    res.render("home", {
+      title: "Home Page",
+      movies: movies,
+      user: user,
+    });
+  }
+});
 
-    if (user?.username) {
-      res.render("home", {
-        title: "Home Page",
-        movies: movies,
-        user: user,
-      });
+// route movies/:id
+// private & public route
+router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
+  const id = req.params.id;
+  const user = req.user;
+
+  // Query the database to retrieve the movie with the specified ID
+
+  db.get("SELECT * FROM movies WHERE id = ?", [id], (err, movie) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).send("Internal server error");
+    } else if (!movie) {
+      res.status(404).send("Movie not found");
     } else {
-      res.render("home", {
-        title: "Home Page",
-        movies: movies,
-        user: {},
+      res.render("movieDetail", {
+        title: "Movie Detail",
+        data: movie,
+        user: user,
       });
     }
   });
 });
 
-// login page
+/* GET login page. */
+// public route
 router.use(morgan("dev")).get("/login", (req, res) => {
   res.render("login", { title: "Login Page", user: {} });
 });
 
-// api/login
-router.post(
-  "/api/login",
-  [
-    check("email", "Please include a valid email!").isEmail(),
-    check("password", "Password is required!").exists(),
-  ],
-  (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { email, password } = req.body;
-    console.log("🚀 ~ file: index.js:57 ~ password:", password);
-
-    // hash pass
-
-    db.get(
-      `SELECT * FROM users WHERE email = ? AND password = ?`,
-      [email, password],
-      async (err, user) => {
-        if (err) {
-          console.log("🚀 ~ file: index.js:68 ~ err.message:", err.message);
-          res.status(500).send("Server error");
-        } else {
-          // jwt
-
-          // const isPasswordMatch = await bcrypt.compare(password, user.password);
-          // if (!isPasswordMatch) {
-          //   return res
-          //     .status(400)
-          //     .json({ errors: [{ msg: "Invalid Credentials!" }] });
-          // }
-
-          const payload = {
-            user: {
-              username: user.username,
-              id: user.id,
-            },
-          };
-
-          jwt.sign(
-            payload,
-            process.env.TOKEN_SECRET,
-            { expiresIn: 360000 },
-            (err, token) => {
-              if (err) throw err;
-              res.json({ token });
-            }
-          );
-
-          // res.redirect("/");
-        }
-      }
-    );
-  }
-);
-
-router.get("/api/logout", (req, res) => {
-  try {
-    res.clearCookie("token");
-    res.redirect("/");
-  } catch (err) {
-    console.log(err);
-  }
+/* GET lgin page. */
+// public route
+router.use(morgan("dev")).get("/register", (req, res) => {
+  res.render("register", { title: "Register Page", user: {} });
 });
 
 module.exports = router;

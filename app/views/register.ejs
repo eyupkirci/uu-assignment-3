@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div id="nav_logo">
+          <h2>MovieTickets.com</h2>
+        </div>
+        <label for="drop" class="toggle">
+          <img
+            id="toggle_img"
+            src="/assets/menu-burger.png"
+            alt="Header menu"
+            width="24px"
+          />
+        </label>
+        <input type="checkbox" id="drop" />
+        <ul class="menu" id="header-menu">
+          <li><a href="/">Home</a></li>
+          <% if (user?.username) { %>
+          <li><a href="/"><%= user?.username %></a></li>
+          <li><a href="/" id="nav-logout-button">Logout</a></li>
+          <% } else { %>
+          <li><a href="/login" id="nav-login-button">Login</a></li>
+          <% } %>
+        </ul>
+      </nav>
+    </header>
+    <section
+      style="
+        border: 1px solid black;
+        margin: auto;
+        width: 320px;
+        padding: 1rem;
+        border-radius: 5px;
+      "
+    >
+      <h2>Register</h2>
+      <form id="register-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required /><br /><br />
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required /><br /><br />
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required /><br /><br />
+
+        <label for="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+        /><br /><br />
+
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" required></textarea><br /><br />
+
+        <label for="credit_card">Credit Card Number:</label>
+        <input
+          type="text"
+          id="credit_card"
+          name="credit_card"
+          required
+        /><br /><br />
+
+        <input type="submit" value="Submit" id="form-register-button" /><br />
+      </form>
+      <p>User? <a href="/login">Login</a></p>
+    </section>
+    <script>
+      const RegisterButton = document.getElementById("form-register-button");
+
+      const handleRegister = (e) => {
+        e.preventDefault();
+        const registerForm = document.getElementById("register-form");
+        const formData = new FormData(registerForm);
+        const data = Object.fromEntries(formData.entries());
+
+        for (let key in data) {
+          if (data.hasOwnProperty(key)) {
+            if (!data[key]) {
+              throw new Error(`${key} is missing`);
+            }
+          }
+        }
+        data.order_history = "";
+
+        fetch("http://localhost:3001/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            if (!response.ok) {
+              console.log(
+                "🚀 ~ file: register.ejs:102 ~ .then ~ response.data:",
+                response.data
+              );
+            }
+
+            // if (data) {
+            //   let userString = JSON.stringify(data.user);
+            //   localStorage.setItem("user", userString);
+            //   window.location.href = "./index.html";
+            //   alert(`${data.message} \nWelcome ${data.user.name}`);
+            //   formData = "";
+            // } else {
+            //   throw new Error("Network response was not ok");
+            // }
+          })
+          .catch((error) => console.log(error));
+      };
+
+      RegisterButton.addEventListener("click", (e) => {
+        handleRegister(e);
+      });
+    </script>
+  </body>
+</html>

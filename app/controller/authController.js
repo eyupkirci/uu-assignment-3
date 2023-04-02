@@ -11,6 +11,8 @@ module.exports = function (req, res, next) {
   // Check if no token
   if (!token) {
     req.user = {};
+    console.log("🚀 ~ file: authController.js:14 ~ req.body:", req.body);
+
     next();
   } else {
     // Verify token

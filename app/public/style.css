@@ -111,6 +111,98 @@ nav a:hover {
   border-radius: 5px;
 }
 
+/* Movie Detail */
+
+#movie-detail {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 20px;
+}
+
+#movie-detail h3 {
+  font-size: 1.25rem;
+  margin: 10px;
+}
+
+#movie-detail img {
+  width: 300px;
+  height: 400px;
+  object-fit: cover;
+  margin: 10px;
+  border-radius: 5px;
+  border: 2px solid gray;
+  opacity: 1;
+  transition: opacity 1s ease 0s;
+}
+#movie-detail img:hover {
+  opacity: 0.5;
+}
+
+#movie-detail p {
+  font-size: 18px;
+  margin: 10px;
+}
+
+#movie-detail strong {
+  font-weight: bold;
+}
+
+#order-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* margin: 20px; */
+}
+
+#order-form div {
+  display: flex;
+  align-items: center;
+  margin: 10px;
+}
+
+#order-form label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+#order-form select {
+  margin-left: 10px;
+}
+
+/* #order-form input[type="date"] {
+  font-size: 18px;
+} */
+
+#movie-submit-button {
+  padding: 10px;
+  margin: 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#login-button {
+  text-decoration: none;
+}
+
+#login-button button {
+  padding: 10px;
+  margin: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#login-button button:hover,
+#movie-submit-button:hover {
+  background-color: #3e8e41;
+}
+
 /* Banner */
 
 .banner {
@@ -387,5 +479,9 @@ footer > * {
   #footer_left,
   #footer_right {
     display: none;
+  }
+
+  #movie-detail {
+    display: block;
   }
 }
