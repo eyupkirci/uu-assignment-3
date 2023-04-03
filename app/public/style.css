@@ -170,10 +170,6 @@ nav a:hover {
   margin-left: 10px;
 }
 
-/* #order-form input[type="date"] {
-  font-size: 18px;
-} */
-
 #movie-submit-button {
   padding: 10px;
   margin: 20px;
@@ -203,7 +199,24 @@ nav a:hover {
   background-color: #3e8e41;
 }
 
-/* Banner */
+/*  --------------------------------------------- */
+/* user info section in user page */
+
+#user-info {
+  margin: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#user-info img {
+  margin: 1rem;
+  border: 1px solid gray;
+  border-radius: 5px;
+}
+
+/*  --------------------------------------------- */
+/* Banner  */
 
 .banner {
   width: 100%;
@@ -231,7 +244,7 @@ nav a:hover {
   height: 25rem;
 }
 
-/* Contact_Form */
+/* Contact_Form  --------------------------------------------- */
 
 .Contact_Form_Container {
   padding: 10px;
@@ -277,7 +290,7 @@ label {
   color: white;
 }
 
-/* Banner */
+/* Banner --------------------------------------------- */
 
 .banner {
   width: 100%;
@@ -420,8 +433,7 @@ footer > * {
   margin: 5px;
 }
 
-/* Media Queries
---------------------------------------------- */
+/* Media Queries --------------------------------------------- */
 
 @media all and (max-width: 768px) {
   /* Header */

@@ -145,6 +145,13 @@ router
             console.error(err.message);
             res.status(500).send("Error inserting user data into the database");
           } else {
+            db.close((err) => {
+              if (err) {
+                console.error(err.message);
+              }
+              console.log("Database connection closed");
+            });
+
             db.get(
               `SELECT * FROM users WHERE email = ? AND password = ?`,
               [email, password],
@@ -189,13 +196,6 @@ router
           }
         }
       );
-
-      db.close((err) => {
-        if (err) {
-          console.error(err.message);
-        }
-        console.log("Database connection closed");
-      });
     }
   );
 
