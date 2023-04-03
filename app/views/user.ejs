@@ -24,38 +24,47 @@
           <li><a href="/">Home</a></li>
           <% if (user?.username) { %>
           <li><a href="/user"><%= user?.username %></a></li>
-          <li><a href="/" id="logout-button">Logout</a></li>
+          <li><a href="/" id="nav-logout-button">Logout</a></li>
           <% } else { %>
-          <li><a href="/login" id="login-button">Login</a></li>
+          <li><a href="/login" id="nav-login-button">Login</a></li>
           <% } %>
         </ul>
       </nav>
     </header>
+    <h2>User Info</h2>
+    <section id="user-info">
+      <img src="/assets/user-icon.webp" alt="user photo" width="300" />
 
-    <section id="movie-section">
-      <% if (movies.length) { %> <% movies.forEach(movie => { %>
-
-      <div class="movie-card" key="<%= movie.id %>">
-        <img
-          class="movie-card__image"
-          src="<%= movie.imageurl %>"
-          alt="<%= movie.title %> poster"
-        />
-        <div class="movie-card__info">
-          <h2 class="movie-card__title"><%= movie.title %></h2>
-          <p class="movie-card__imdb">IMDb Rating: <%= movie.imdbrating %></p>
-
-          <a href="/movies/<%= movie.id %>">
-            <button class="movie-detail-button" id="<%= movie.id %>">
-              Details
-            </button>
-          </a>
-        </div>
-      </div>
-
-      <% }) %> <% } else { %>
-      <p>No movies found.</p>
-      <% } %>
+      <table>
+        <tr>
+          <th>User Info</th>
+          <th></th>
+        </tr>
+        <tr>
+          <td>Name</td>
+          <td><%= user?.name %></td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td><%= user?.email %></td>
+        </tr>
+        <tr>
+          <td>Username</td>
+          <td><%= user?.username %></td>
+        </tr>
+        <tr>
+          <td>Address</td>
+          <td><%= user?.address %></td>
+        </tr>
+        <tr>
+          <td>Password</td>
+          <td><%= user?.password %></td>
+        </tr>
+        <tr>
+          <td>Credit Card</td>
+          <td><%= user?.credit_card %></td>
+        </tr>
+      </table>
     </section>
 
     <script>

@@ -32,6 +32,32 @@ router.use(morgan("dev")).get("/", authController, async (req, res) => {
   }
 });
 
+/* GET user page. */
+// route /user
+// private route
+router.use(morgan("dev")).get("/user", authController, async (req, res) => {
+  if (req.user) {
+    db.get("SELECT * FROM users WHERE id = ?", [req.user.id], (err, user) => {
+      if (err) {
+        console.error(err.message);
+        res.status(500).send("Internal server error");
+      } else if (!user) {
+        res.status(404).send("User not found");
+      } else {
+        user = { ...user, password: "**********" };
+        console.log("userData", user);
+        res.render("user", {
+          title: "User Page",
+          user: user,
+        });
+      }
+    });
+  } else {
+    res.status(401).send({ msg: "Authorization Required" });
+  }
+});
+
+/* GET moviedetail page. */
 // route movies/:id
 // private & public route
 router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
