@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title><%= title %></title>
-    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header>
@@ -14,19 +14,19 @@
         <label for="drop" class="toggle">
           <img
             id="toggle_img"
-            src="/assets/menu-burger.png"
+            src="assets/menu-burger.png"
             alt="Header menu"
             width="24px"
           />
         </label>
         <input type="checkbox" id="drop" />
         <ul class="menu" id="header-menu">
-          <li><a href="/">Home</a></li>
-          <% if (user?.username) { %>
-          <li><a href="/user"><%= user?.username %></a></li>
-          <li><a href="/api/logout" id="logout-button">Logout</a></li>
+          <li><a href="./">Home</a></li>
+          <% if (user.username) { %>
+          <li><a href="./user"><%= user.username %></a></li>
+          <li><a href="./api/logout" id="logout-button">Logout</a></li>
           <% } else { %>
-          <li><a href="/login" id="login-button">Login</a></li>
+          <li><a href="./login" id="login-button">Login</a></li>
           <% } %>
         </ul>
       </nav>
@@ -45,7 +45,7 @@
           <h2 class="movie-card__title"><%= movie.title %></h2>
           <p class="movie-card__imdb">IMDb Rating: <%= movie.imdbrating %></p>
 
-          <a href="/movies/<%= movie.id %>">
+          <a href="movies/<%= movie.id %>">
             <button class="movie-detail-button" id="<%= movie.id %>">
               Details
             </button>
@@ -57,7 +57,7 @@
       <p>No movies found.</p>
       <% } %>
     </section>
-    <script src="/javascript.js"></script>
+    <script src="javascript.js"></script>
     <script>
       // const logoutButton = document.getElementById("logout-button");
       // if (logoutButton) {

@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <title><%= title %></title>
-    <link rel="stylesheet" href="/style.css" />
-    <script src="/javascript.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script src="javascript.js"></script>
   </head>
   <body>
     <header>
@@ -15,26 +15,26 @@
         <label for="drop" class="toggle">
           <img
             id="toggle_img"
-            src="/assets/menu-burger.png"
+            src="./assets/menu-burger.png"
             alt="Header menu"
             width="24px"
           />
         </label>
         <input type="checkbox" id="drop" />
         <ul class="menu" id="header-menu">
-          <li><a href="/">Home</a></li>
-          <% if (user?.username) { %>
-          <li><a href="/user"><%= user?.username %></a></li>
-          <li><a href="/" id="logout-button">Logout</a></li>
+          <li><a href="./">Home</a></li>
+          <% if (user.username) { %>
+          <li><a href="./user"><%= user.username %></a></li>
+          <li><a href="./" id="logout-button">Logout</a></li>
           <% } else { %>
-          <li><a href="/login" id="nav-login-button">Login</a></li>
+          <li><a href="./login" id="nav-login-button">Login</a></li>
           <% } %>
         </ul>
       </nav>
     </header>
     <h3>User Info</h3>
     <section id="user-info">
-      <img src="/assets/user-icon.webp" alt="user photo" width="300" />
+      <img src="./assets/user-icon.webp" alt="user photo" width="300" />
 
       <table>
         <tr>
@@ -43,27 +43,27 @@
         </tr>
         <tr>
           <td>Name</td>
-          <td><%= user?.name %></td>
+          <td><%= user.name %></td>
         </tr>
         <tr>
           <td>Email</td>
-          <td><%= user?.email %></td>
+          <td><%= user.email %></td>
         </tr>
         <tr>
           <td>Username</td>
-          <td><%= user?.username %></td>
+          <td><%= user.username %></td>
         </tr>
         <tr>
           <td>Address</td>
-          <td><%= user?.address %></td>
+          <td><%= user.address %></td>
         </tr>
         <tr>
           <td>Password</td>
-          <td><%= user?.password %></td>
+          <td><%= user.password %></td>
         </tr>
         <tr>
           <td>Credit Card</td>
-          <td><%= user?.credit_card %></td>
+          <td><%= user.credit_card %></td>
         </tr>
       </table>
     </section>
