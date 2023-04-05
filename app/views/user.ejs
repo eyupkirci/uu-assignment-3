@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title><%= title %></title>
     <link rel="stylesheet" href="/style.css" />
+    <script src="/javascript.js"></script>
   </head>
   <body>
     <header>
@@ -24,14 +25,14 @@
           <li><a href="/">Home</a></li>
           <% if (user?.username) { %>
           <li><a href="/user"><%= user?.username %></a></li>
-          <li><a href="/" id="nav-logout-button">Logout</a></li>
+          <li><a href="/" id="logout-button">Logout</a></li>
           <% } else { %>
           <li><a href="/login" id="nav-login-button">Login</a></li>
           <% } %>
         </ul>
       </nav>
     </header>
-    <h2>User Info</h2>
+    <h3>User Info</h3>
     <section id="user-info">
       <img src="/assets/user-icon.webp" alt="user photo" width="300" />
 
@@ -67,31 +68,12 @@
       </table>
     </section>
 
+    <article><% console.log(user.movies)%></article>
     <script>
       const logoutButton = document.getElementById("logout-button");
-
-      const handleLogout = () => {
-        if (confirm("Are you sure you want to log out?")) {
-          fetch("http://localhost:3001/api/logout", {
-            method: "GET",
-            mode: "no-cors",
-            headers: {
-              "Content-Type": "application/json;charset=UTF-8",
-            },
-          })
-            .then((response) => {
-              console.log("User logged out!");
-              if (response.ok) {
-                fetch("http://localhost:3001/");
-                location.href = "/";
-              }
-            })
-            // .then(() => (window.location.href = "/"))
-            .catch((error) => console.error(error));
-        }
-      };
-
-      logoutButton.addEventListener("click", handleLogout);
+      if (logoutButton) {
+        logoutButton.addEventListener("click", handleLogout);
+      }
     </script>
   </body>
 </html>

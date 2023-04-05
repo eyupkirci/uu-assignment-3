@@ -7,7 +7,11 @@ const router = express.Router();
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./utils/database.db");
 const dotenv = require("dotenv");
-const { getMovies, getMovie } = require("../helper/fetchMovieData");
+const {
+  getMovies,
+  getMovie,
+  getOrderHistory,
+} = require("../helper/fetchMovieData");
 
 dotenv.config();
 
@@ -36,6 +40,8 @@ router.use(morgan("dev")).get("/", authController, async (req, res) => {
 // route /user
 // private route
 router.use(morgan("dev")).get("/user", authController, async (req, res) => {
+  const order_history = await getOrderHistory(db, req.user.id);
+
   if (req.user) {
     db.get("SELECT * FROM users WHERE id = ?", [req.user.id], (err, user) => {
       if (err) {
@@ -45,10 +51,11 @@ router.use(morgan("dev")).get("/user", authController, async (req, res) => {
         res.status(404).send("User not found");
       } else {
         user = { ...user, password: "**********" };
-        console.log("userData", user);
+        console.log("userData", user, order_history);
         res.render("user", {
           title: "User Page",
           user: user,
+          movies: order_history,
         });
       }
     });

@@ -49,45 +49,12 @@
       </form>
       <p>Not user? <a href="/register">Sign Up</a></p>
     </section>
+    <script src="/javascript.js"></script>
     <script>
       const loginForm = document.getElementById("login-form");
       const loginButton = document.getElementById("form-login-button");
-
-      const handleLogin = (e) => {
-        e.preventDefault();
-        const formData = new FormData(loginForm);
-        const data = Object.fromEntries(formData.entries());
-
-        fetch("http://localhost:3001/api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json;charset=UTF-8",
-          },
-          body: JSON.stringify(data),
-        })
-          .then((response) => response.json())
-          .then((response) => {
-            console.log(response);
-            console.log(
-              "🚀 ~ file: login.ejs:71 ~ .then ~ response:",
-              response
-            );
-            if (response.token) {
-              localStorage.setItem("token", response.token);
-              document.cookie = `token=${response.token}`;
-              window.location.href = "/";
-            } else {
-              const emailError = document.getElementById("email-error");
-              const mesText = response.errors.filter(
-                (item) => item.param === "email"
-              );
-              console.log(mesText);
-              emailError.innerText = mesText[0]?.msg;
-            }
-          });
-      };
-
       loginButton.addEventListener("click", (e) => {
+        // public/javascript.js
         handleLogin(e);
       });
     </script>
