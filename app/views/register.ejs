@@ -74,53 +74,9 @@
       </form>
       <p>User? <a href="/login">Login</a></p>
     </section>
+    <script src="/javascript.js"></script>
     <script>
       const RegisterButton = document.getElementById("form-register-button");
-
-      const handleRegister = (e) => {
-        e.preventDefault();
-        const registerForm = document.getElementById("register-form");
-        const formData = new FormData(registerForm);
-        const data = Object.fromEntries(formData.entries());
-
-        for (let key in data) {
-          if (data.hasOwnProperty(key)) {
-            if (!data[key]) {
-              throw new Error(`${key} is missing`);
-            }
-          }
-        }
-        data.order_history = "";
-
-        fetch("http://localhost:3001/api/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json;charset=UTF-8",
-          },
-          body: JSON.stringify(data),
-        })
-          .then((response) => response.json())
-          .then((response) => {
-            if (!response.ok) {
-              console.log(
-                "🚀 ~ file: register.ejs:102 ~ .then ~ response.data:",
-                response.data
-              );
-            }
-
-            // if (data) {
-            //   let userString = JSON.stringify(data.user);
-            //   localStorage.setItem("user", userString);
-            //   window.location.href = "./index.html";
-            //   alert(`${data.message} \nWelcome ${data.user.name}`);
-            //   formData = "";
-            // } else {
-            //   throw new Error("Network response was not ok");
-            // }
-          })
-          .catch((error) => console.log(error));
-      };
-
       RegisterButton.addEventListener("click", (e) => {
         handleRegister(e);
       });

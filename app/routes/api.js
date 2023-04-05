@@ -7,30 +7,47 @@ const authController = require("../controller/authController");
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./utils/database.db");
 const dotenv = require("dotenv");
-const { getMovies, getMovie } = require("../helper/fetchMovieData");
+const {
+  getMovies,
+  getMovie,
+  getOrderHistory,
+} = require("../helper/fetchMovieData");
+
+const { updateUserOrderHostory } = require("../helper/updateDatabase");
 const { check, validationResult } = require("express-validator");
 dotenv.config();
 
 // api/buy
 router.use(morgan("dev")).post("/buy", authController, async (req, res) => {
-  console.log(req.body);
   const movie = await getMovie(db, req.body.id);
 
-  console.log(movie);
-
-  // Check if the request body is empty
-  if (Object.keys(req.body).length === 0) {
-    res.status(400).send("No request parameters provided");
+  // Validate the incoming data
+  if (!req.user.id || !movie.id || !req.body.date || !req.body.isCompleted) {
+    res.status(400).send("Missing required fields");
     return;
   }
 
-  // Check if the date is valid
-  if (!Date.parse(req.body.date)) {
-    res.status(400).send("Invalid date provided");
-    return;
-  }
+  // insert order into orders table
+  db.run(
+    `INSERT INTO orders (user_id, movie_id, date, is_completed)
+                 VALUES (?, ?, ?, ?)`,
+    [req.user.id, movie.id, req.body.date, req.body.isCompleted],
+    (err) => {
+      if (err) {
+        console.error(err.message);
+        res.status(500).send("Internal server error");
+        return;
+      }
+    }
+  );
 
-  res.status(200).send(movie);
+  //update users table order_history column
+  updateUserOrderHostory(db, req.user.id);
+
+  // get the order_history of a particular user.
+  const order_history = await getOrderHistory(db, req.user.id);
+
+  res.status(201).send({ msg: "Successfully done", movies: order_history });
 });
 
 // api/login
@@ -60,35 +77,33 @@ router
           if (err) {
             console.log("🚀 ~ file: index.js:68 ~ err.message:", err.message);
             res.status(500).send("Server error");
-          } else {
-            // jwt
-
-            // const isPasswordMatch = await bcrypt.compare(password, user.password);
-            // if (!isPasswordMatch) {
-            //   return res
-            //     .status(400)
-            //     .json({ errors: [{ msg: "Invalid Credentials!" }] });
-            // }
-
-            const payload = {
-              user: {
-                username: user.username,
-                id: user.id,
-              },
-            };
-
-            jwt.sign(
-              payload,
-              process.env.TOKEN_SECRET,
-              { expiresIn: 360000 },
-              (err, token) => {
-                if (err) throw err;
-                res.json({ token });
-              }
-            );
-
-            // res.redirect("/");
           }
+
+          // jwt
+
+          // const isPasswordMatch = await bcrypt.compare(password, user.password);
+          // if (!isPasswordMatch) {
+          //   return res
+          //     .status(400)
+          //     .json({ errors: [{ msg: "Invalid Credentials!" }] });
+          // }
+
+          const payload = {
+            user: {
+              username: user.username,
+              id: user.id,
+            },
+          };
+
+          jwt.sign(
+            payload,
+            process.env.TOKEN_SECRET,
+            { expiresIn: 360000 },
+            (err, token) => {
+              if (err) throw err;
+              res.json({ token });
+            }
+          );
         }
       );
     }
@@ -145,12 +160,12 @@ router
             console.error(err.message);
             res.status(500).send("Error inserting user data into the database");
           } else {
-            db.close((err) => {
-              if (err) {
-                console.error(err.message);
-              }
-              console.log("Database connection closed");
-            });
+            // db.close((err) => {
+            //   if (err) {
+            //     console.error(err.message);
+            //   }
+            //   console.log("Database connection closed");
+            // });
 
             db.get(
               `SELECT * FROM users WHERE email = ? AND password = ?`,

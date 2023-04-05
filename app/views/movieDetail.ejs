@@ -46,8 +46,8 @@
           <p><strong>Description:</strong> <%= data.synopsis %></p>
 
           <% if (user?.username) { %>
-          <h3>Book a Ticket</h3>
           <form id="order-form">
+            <h3>Book a Ticket</h3>
             <input
               type="text"
               name="id"
@@ -67,61 +67,29 @@
               </select>
             </div>
             <button type="submit" id="movie-submit-button">Finish</button>
+            <% } else { %>
+            <div style="text-align: center">
+              <label for="login-button">Login / Register to buy ticket</label>
+              <a href="/login" id="login-button">
+                <button>Login</button>
+              </a>
+            </div>
+            <% } %>
           </form>
-          <% } else { %>
-          <div>
-            Login / Register to buy ticket
-            <a href="/login" id="login-button">
-              <button>Login</button>
-            </a>
-          </div>
-          <% } %>
         </div>
       </div>
     </section>
+    <script src="/javascript.js"></script>
     <script>
       const orderFinishButton = document.getElementById("movie-submit-button");
-
-      const handleOrder = (e) => {
-        e.preventDefault();
-        const orderForm = document.getElementById("order-form");
-        const formData = new FormData(orderForm);
-        const data = Object.fromEntries(formData.entries());
-
-        for (let key in data) {
-          if (data.hasOwnProperty(key)) {
-            if (!data[key]) {
-              throw new Error(`${key} is missing`);
-            }
-          }
-        }
-
-        fetch("http://localhost:3001/api/buy", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json;charset=UTF-8",
-          },
-          body: JSON.stringify(data),
-        })
-          .then((response) => response.json())
-          .then((response) => {
-            if (!response.title) {
-              console.log(
-                "🚀 ~ file: register.ejs:102 ~ .then ~ response.data:",
-                response
-              );
-            } else {
-              alert(
-                `Booked for the movie! \nTitle: ${response.title} \nDate: ${data.date}`
-              );
-            }
-          })
-          .catch((error) => console.log(error));
-      };
-
       orderFinishButton.addEventListener("click", (e) => {
         handleOrder(e);
       });
+
+      const logoutButton = document.getElementById("logout-button");
+      if (logoutButton) {
+        logoutButton.addEventListener("click", handleLogout);
+      }
     </script>
   </body>
 </html>

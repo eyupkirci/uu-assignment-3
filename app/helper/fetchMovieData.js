@@ -27,4 +27,20 @@ async function getMovie(db, id) {
   });
 }
 
-module.exports = { getMovies, getMovie };
+async function getOrderHistory(db, id) {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `SELECT orders.id, user_id, movie_id, orders.is_completed, orders.date FROM orders JOIN movies ON orders.movie_id = movies.id JOIN users ON orders.user_id = users.id WHERE users.id = ?`,
+      [id],
+      (err, movies) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(movies);
+        }
+      }
+    );
+  });
+}
+
+module.exports = { getMovies, getMovie, getOrderHistory };
