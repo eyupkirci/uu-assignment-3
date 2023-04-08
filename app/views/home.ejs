@@ -21,20 +21,20 @@
         </label>
         <input type="checkbox" id="drop" />
         <ul class="menu" id="header-menu">
-          <li><a href="./">Home</a></li>
+          <li><a href="/">Home</a></li>
           <% if (user.username) { %>
-          <li><a href="./user"><%= user.username %></a></li>
-          <li><a href="./api/logout" id="logout-button">Logout</a></li>
+          <li><a href="/user"><%= user.username %></a></li>
+          <li><a href="/api/logout" id="logout-button">Logout</a></li>
           <% } else { %>
-          <li><a href="./login" id="login-button">Login</a></li>
+          <li><a href="/login" id="login-button">Login</a></li>
           <% } %>
         </ul>
       </nav>
     </header>
 
     <section id="movie-section">
-      <% if (movies.length) { %> <% movies.forEach(movie => { %>
-
+      <% let counter = 0 %> <% movies.forEach(movie => { %> <% if (counter < 10)
+      { %>
       <div class="movie-card" key="<%= movie.id %>">
         <img
           class="movie-card__image"
@@ -44,24 +44,65 @@
         <div class="movie-card__info">
           <h2 class="movie-card__title"><%= movie.title %></h2>
           <p class="movie-card__imdb">IMDb Rating: <%= movie.imdbrating %></p>
-
-          <a href="movies/<%= movie.id %>">
-            <button class="movie-detail-button" id="<%= movie.id %>">
-              Details
-            </button>
-          </a>
+          <a href="movies/<%= movie.id %>"> </a>
+          <button class="buy-movie-button" id="<%= movie.id %>">Buy</button>
         </div>
       </div>
-
-      <% }) %> <% } else { %>
-      <p>No movies found.</p>
-      <% } %>
+      <% counter++ %> <% } %> <% }) %>
     </section>
+
+    <div id="pagination">
+      <% for (let i = 0; i * 10 < movies.length; i++) { %>
+      <button class="pagination-button" id="<%=i%>"><%= i + 1 %></button>
+      <% } %>
+    </div>
     <script src="javascript.js"></script>
     <script>
-      // const logoutButton = document.getElementById("logout-button");
-      // if (logoutButton) {
-      //   logoutButton.addEventListener("click", handleLogout);
+      const buyButtons = document.getElementsByClassName("buy-movie-button");
+      const PageButtons = document.getElementsByClassName("pagination-button");
+
+      for (let i = 0; i < buyButtons.length; i++) {
+        buyButtons[i].addEventListener("click", (e) =>
+          fetchMovieAvailability(e)
+        );
+      }
+
+      for (let i = 0; i < PageButtons.length; i++) {
+        PageButtons[i].addEventListener("click", (e) => {
+          let id = e.target.id;
+          // fetchAllMovies();
+          fetch(`http://localhost:3001/api/movies`)
+            .then((response) => response.json())
+            .then(({ data }) => {
+              console.log(data);
+              createMovieCards(data, id);
+            })
+            .catch((err) => console.log(err));
+        });
+      }
+
+      async function fetchMovieAvailability(e) {
+        const movieId = e.target.id;
+
+        const data = await fetch(`http://localhost:3001/api/movies/${movieId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            return data;
+          })
+          .catch((err) => console.log(err));
+        createModalView();
+        showModal(data);
+      }
+
+      // function fetchAllMovies() {
+      //   fetch(`http://localhost:3001/api/movies`)
+      //     .then((response) => response.json())
+      //     .then(({ data }) => {
+      //       console.log(data);
+      //       createMovieCards(data);
+      //     })
+      //     .catch((err) => console.log(err));
       // }
     </script>
   </body>
