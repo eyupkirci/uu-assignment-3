@@ -11,6 +11,19 @@ async function getMovies(db) {
     });
   });
 }
+async function get10Movies(db) {
+  return new Promise((resolve, reject) => {
+    db.all("SELECT * FROM movies LIMIT 10", (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        // Map the rows to an array of movie names and resolve the promise
+        const movies = rows.map((row) => row);
+        resolve(movies);
+      }
+    });
+  });
+}
 
 async function getMovie(db, id) {
   return new Promise((resolve, reject) => {
@@ -43,4 +56,4 @@ async function getOrderHistory(db, id) {
   });
 }
 
-module.exports = { getMovies, getMovie, getOrderHistory };
+module.exports = { getMovies, get10Movies, getMovie, getOrderHistory };

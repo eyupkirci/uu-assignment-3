@@ -101,8 +101,61 @@ db.serialize(() => {
     }
   );
 
+  // Create availability table
+  db.run(
+    `CREATE TABLE IF NOT EXISTS availability (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    movie_id INTEGER,
+    date DATE,
+    timeslot TEXT,
+    available_seats INTEGER CHECK (available_seats <= 30),
+    FOREIGN KEY (movie_id) REFERENCES movies (id)
+);`,
+    (err) => {
+      if (err) {
+        console.error(err.message);
+      }
+
+      console.log("availability table created.");
+    }
+  );
+
+  db.all("SELECT * FROM movies", (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return;
+    }
+
+    rows.forEach((movie) => {
+      const startDate = new Date("2023-02-14");
+      const endDate = new Date("2023-02-23");
+      const availableSeats = 30;
+      for (
+        let date = startDate;
+        date <= endDate;
+        date.setDate(date.getDate() + 1)
+      ) {
+        const dateString = date.toISOString().split("T")[0];
+        const timeslots = ["10:00", "13:00", "16:00"]; // assuming these are the available timeslots for each day
+        for (const timeslot of timeslots) {
+          const sql = `INSERT INTO availability (movie_id, date, timeslot, available_seats) VALUES (?,?,?,?)`;
+
+          db.run(
+            sql,
+            [movie.id, dateString, timeslot, availableSeats],
+            (err) => {
+              if (err) {
+                console.error(err.message);
+                return;
+              }
+              console.log(`${movie.title} -> availability table created.`);
+            }
+          );
+        }
+      }
+    });
+  });
+
   //last comment
   console.log("Tables created and users and movies inserted");
 });
-
-db.close();

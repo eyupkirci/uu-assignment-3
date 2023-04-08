@@ -14,19 +14,19 @@
         <label for="drop" class="toggle">
           <img
             id="toggle_img"
-            src="./assets/menu-burger.png"
+            src="assets/menu-burger.png"
             alt="Header menu"
             width="24px"
           />
         </label>
         <input type="checkbox" id="drop" />
         <ul class="menu" id="header-menu">
-          <li><a href="./">Home</a></li>
+          <li><a href="/">Home</a></li>
           <% if (user.username) { %>
-          <li><a href="./"><%= user.username %></a></li>
-          <li><a href="./" id="nav-logout-button">Logout</a></li>
+          <li><a href="/user"><%= user.username %></a></li>
+          <li><a href="/api/logout" id="logout-button">Logout</a></li>
           <% } else { %>
-          <li><a href="./login" id="nav-login-button">Login</a></li>
+          <li><a href="/login" id="login-button">Login</a></li>
           <% } %>
         </ul>
       </nav>
@@ -47,14 +47,13 @@
         /><br /><br />
         <input type="submit" value="Login" id="form-login-button" /><br /><br />
       </form>
-      <p>Not user? <a href="register">Sign Up</a></p>
+      <p>Not user? <a href="/register">Sign Up</a></p>
     </section>
-    <script src="javascript.js"></script>
+    <script src="/javascript.js"></script>
     <script>
       const loginForm = document.getElementById("login-form");
       const loginButton = document.getElementById("form-login-button");
       loginButton.addEventListener("click", (e) => {
-        // public/javascript.js
         handleLogin(e);
       });
     </script>

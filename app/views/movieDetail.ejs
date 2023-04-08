@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title><%=title %> - <%= data.title %></title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <header>
@@ -14,19 +14,19 @@
         <label for="drop" class="toggle">
           <img
             id="toggle_img"
-            src="./assets/menu-burger.png"
+            src="/assets/menu-burger.png"
             alt="Header menu"
             width="24px"
           />
         </label>
         <input type="checkbox" id="drop" />
         <ul class="menu" id="header-menu">
-          <li><a href="./">Home</a></li>
+          <li><a href="/">Home</a></li>
           <% if (user.username) { %>
-          <li><a href="./user"><%= user.username %></a></li>
-          <li><a href="./" id="logout-button">Logout</a></li>
+          <li><a href="/user"><%= user.username %></a></li>
+          <li><a href="/api/logout" id="logout-button">Logout</a></li>
           <% } else { %>
-          <li><a href="./login" id="login-button">Login</a></li>
+          <li><a href="/login" id="login-button">Login</a></li>
           <% } %>
         </ul>
       </nav>
@@ -70,7 +70,7 @@
             <% } else { %>
             <div style="text-align: center">
               <label for="login-button">Login / Register to buy ticket</label>
-              <a href="./login" id="login-button">
+              <a href="/login" id="login-button">
                 <button>Login</button>
               </a>
             </div>
@@ -79,17 +79,12 @@
         </div>
       </div>
     </section>
-    <script src="javascript.js"></script>
+    <script src="/javascript.js"></script>
     <script>
       const orderFinishButton = document.getElementById("movie-submit-button");
       orderFinishButton.addEventListener("click", (e) => {
         handleOrder(e);
       });
-
-      const logoutButton = document.getElementById("logout-button");
-      if (logoutButton) {
-        logoutButton.addEventListener("click", handleLogout);
-      }
     </script>
   </body>
 </html>

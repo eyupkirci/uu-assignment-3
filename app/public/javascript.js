@@ -1,5 +1,7 @@
 // console.log("javascript.js");
 
+//FUNCTIONS
+
 const handleLogin = (e) => {
   e.preventDefault();
   const formData = new FormData(loginForm);
@@ -14,8 +16,6 @@ const handleLogin = (e) => {
   })
     .then((response) => response.json())
     .then((response) => {
-      console.log(response);
-      console.log("🚀 ~ file: login.ejs:71 ~ .then ~ response:", response);
       if (response.token) {
         localStorage.setItem("token", response.token);
         document.cookie = `token=${response.token}`;
@@ -101,7 +101,7 @@ const handleRegister = (e) => {
   }
   data.order_history = "";
 
-  fetch("http://localhost:3001/api/register", {
+  fetch("http://localhost:3001/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=UTF-8",
@@ -110,22 +110,129 @@ const handleRegister = (e) => {
   })
     .then((response) => response.json())
     .then((response) => {
+      console.log(response);
       if (!response.ok) {
         console.log(
           "🚀 ~ file: register.ejs:102 ~ .then ~ response.data:",
           response.data
         );
       }
-
-      // if (data) {
-      //   let userString = JSON.stringify(data.user);
-      //   localStorage.setItem("user", userString);
-      //   window.location.href = "./index.html";
-      //   alert(`${data.message} \nWelcome ${data.user.name}`);
-      //   formData = "";
-      // } else {
-      //   throw new Error("Network response was not ok");
-      // }
+      console.log("we get here");
+      window.location.href = "/";
     })
     .catch((error) => console.log(error));
 };
+
+// creates moviecard
+const movieCard = (movie) => {
+  const movieCard = document.createElement("div");
+  movieCard.className = "movie-card";
+  movieCard.setAttribute("key", movie.id);
+
+  const movieImage = document.createElement("img");
+  movieImage.className = "movie-card__image";
+  movieImage.src = movie.imageurl;
+  movieImage.alt = `${movie.title} poster`;
+  movieCard.appendChild(movieImage);
+
+  const movieInfo = document.createElement("div");
+  movieInfo.className = "movie-card__info";
+
+  const movieTitle = document.createElement("h2");
+  movieTitle.className = "movie-card__title";
+  movieTitle.textContent = movie.title;
+  movieInfo.appendChild(movieTitle);
+
+  const imdbRating = document.createElement("p");
+  imdbRating.className = "movie-card__imdb";
+  imdbRating.textContent = `IMDb Rating: ${movie.imdbrating}`;
+  movieInfo.appendChild(imdbRating);
+
+  const movieLink = document.createElement("a");
+  movieLink.href = `movies/${movie.id}`;
+  movieInfo.appendChild(movieLink);
+
+  const buyButton = document.createElement("button");
+  buyButton.className = "buy-movie-button";
+  buyButton.id = movie.id;
+  buyButton.textContent = "Buy";
+  movieInfo.appendChild(buyButton);
+  movieCard.appendChild(movieInfo);
+
+  return movieCard;
+};
+
+// funtion creating moviecards in movie section for pagination
+function createMovieCards(movies, id) {
+  const movieSection = document.getElementById("movie-section");
+  movieSection.innerHTML = "";
+
+  for (let i = id * 10; i < id * 10 + 10; i++) {
+    movieSection.appendChild(movieCard(movies[i]));
+  }
+}
+
+// modal view creator function
+function createModalView() {
+  // Create modal element
+  const modal = document.createElement("div");
+  modal.id = "modal";
+  modal.classList.add("modal");
+
+  // Create modal content element
+  const modalContent = document.createElement("div");
+  modalContent.classList.add("modal-content");
+
+  // Create close button element
+  const closeBtn = document.createElement("span");
+  closeBtn.classList.add("close");
+  closeBtn.innerHTML = "&times;";
+
+  // Create modal body element
+  const modalBody = document.createElement("div");
+  modalBody.id = "modal-body";
+
+  // Append close button to modal content
+  modalContent.appendChild(closeBtn);
+
+  // Append modal body to modal content
+  modalContent.appendChild(modalBody);
+
+  // Append modal content to modal
+  modal.appendChild(modalContent);
+
+  // Add event listeners to close modal
+  closeBtn.onclick = () => {
+    modal.style.display = "none";
+  };
+
+  window.onclick = (event) => {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  // Add modal to the document body
+  document.body.appendChild(modal);
+}
+
+//show modal view function
+function showModal({ data }) {
+  const modal = document.getElementById("modal");
+  const modalBody = document.getElementById("modal-body");
+
+  modalBody.innerHTML = `${data.title}`;
+  modal.style.display = "block";
+
+  const closeBtn = document.getElementsByClassName("close")[0];
+
+  closeBtn.onclick = () => {
+    modal.style.display = "none";
+  };
+
+  window.onclick = (event) => {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+}
