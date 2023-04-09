@@ -17,6 +17,7 @@ const {
 
 const { check, validationResult } = require("express-validator");
 dotenv.config();
+
 /* GET home page. */
 // private & public route
 router.use(morgan("dev")).get("/", authController, async (req, res) => {
@@ -52,6 +53,7 @@ router.use(morgan("dev")).get("/user", authController, async (req, res) => {
       } else if (!user) {
         res.status(404).send("User not found");
       } else {
+        //change password display while sending back to the user.
         user = { ...user, password: "**********" };
         console.log("userData", user, order_history);
         res.render("user", {

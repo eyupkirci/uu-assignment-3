@@ -54,8 +54,10 @@ const handleLogout = () => {
 const handleOrder = (e) => {
   e.preventDefault();
   const orderForm = document.getElementById("order-form");
+
   const formData = new FormData(orderForm);
   const data = Object.fromEntries(formData.entries());
+  console.log("🚀 ~ file: javascript.js:59 ~ handleOrder ~ data:", data);
 
   for (let key in data) {
     if (data.hasOwnProperty(key)) {
@@ -123,7 +125,7 @@ const handleRegister = (e) => {
     .catch((error) => console.log(error));
 };
 
-// creates moviecard
+// function creating moviecard
 const movieCard = (movie) => {
   const movieCard = document.createElement("div");
   movieCard.className = "movie-card";
@@ -216,15 +218,57 @@ function createModalView() {
   document.body.appendChild(modal);
 }
 
-//show modal view function
-async function showModal({ data }) {
+// handle movieavailability check
+function handleAvailabilty(e) {
+  e.preventDefault();
+  console.log("handle availabilty");
+
+  const orderForm = document.getElementById("order-form");
+  const movieId = e.target.closest("#movie-detail").getAttribute("key");
+  const movieDate = document.getElementById("date").value;
+
+  fetch("http://localhost:3001/api/isavailable", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json;charset=UTF-8",
+    },
+    body: JSON.stringify({ movieId: movieId, movieDate: movieDate }),
+  })
+    .then((response) => response.json())
+    .then((response) => {
+      const movieTimeslots = document.getElementById("movie-timeslots-div");
+      const selectBox = document.createElement("select");
+      selectBox.id = "movie-timeslots-select";
+      selectBox.name = "timeslot";
+      for (let index = 0; index < response.length; index++) {
+        const movie = response[index];
+        const option = document.createElement("option");
+        option.value = movie.timeslot;
+        option.text = movie.timeslot;
+        selectBox.add(option);
+      }
+
+      const label = document.createElement("label");
+      label.textContent = "Available TimeSlots";
+      label.htmlFor = "movie-timeslots-select";
+
+      movieTimeslots.appendChild(label);
+      movieTimeslots.appendChild(selectBox);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+// MODAL VIEW (MOVIEDETAIL AND ORDER SCREEN)
+async function movieInModal({ data }) {
   const modal = document.getElementById("modal");
   const modalBody = document.getElementById("modal-body");
   const user = await fetch(`http://localhost:3001/api/user`)
     .then((response) => response.json())
     .then(({ user }) => {
       modalBody.innerHTML = `
-  <div id="movie-detail">
+  <div id="movie-detail" key=${data.id}>
     <div>
       <img src="${data.imageurl}" alt="${data.title}" />
     </div>
@@ -252,7 +296,9 @@ async function showModal({ data }) {
           <div>
             <label for="date">Date:</label>
             <input type="date" name="date" id="date" required />
+            <button id='check-availability-button'> Availability</button>
           </div>
+          <div id="movie-timeslots-div"></div>
           <div>
             <select name="isCompleted">
               <option value="true">Buy</option>
@@ -298,10 +344,19 @@ async function showModal({ data }) {
   orderFinishButton.addEventListener("click", (e) => {
     handleOrder(e);
   });
+
+  // handle availability
+
+  const availabilityCheckButton = document.getElementById(
+    "check-availability-button"
+  );
+  availabilityCheckButton.addEventListener("click", (e) => {
+    handleAvailabilty(e);
+  });
 }
 
 // buy movie funciton
-async function fetchMovieAvailability(e) {
+async function showModalView(e) {
   const movieId = e.target.id;
 
   const data = await fetch(`http://localhost:3001/api/movies/${movieId}`)
@@ -313,5 +368,5 @@ async function fetchMovieAvailability(e) {
     .catch((err) => console.log(err));
 
   createModalView();
-  showModal(data);
+  movieInModal(data);
 }

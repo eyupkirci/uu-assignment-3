@@ -82,25 +82,6 @@ db.serialize(() => {
     );
   }
 
-  // Create orders table
-  db.run(
-    `CREATE TABLE IF NOT EXISTS orders (
-  id INTEGER PRIMARY KEY,
-  user_id INTEGER,
-  movie_id INTEGER,
-  is_completed TEXT CHECK(is_completed IN ('true', 'false')),
-  date TEXT,
-  FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (movie_id) REFERENCES movies(id)
-)`,
-    (err) => {
-      if (err) {
-        console.error(err.message);
-      }
-      console.log("orders table created.");
-    }
-  );
-
   // Create availability table
   db.run(
     `CREATE TABLE IF NOT EXISTS availability (
@@ -127,8 +108,8 @@ db.serialize(() => {
     }
 
     rows.forEach((movie) => {
-      const startDate = new Date("2023-02-14");
-      const endDate = new Date("2023-02-23");
+      const startDate = new Date("2023-03-10");
+      const endDate = new Date("2023-06-10");
       const availableSeats = 30;
       for (
         let date = startDate;
@@ -155,6 +136,27 @@ db.serialize(() => {
       }
     });
   });
+
+  // Create orders table
+  db.run(
+    `CREATE TABLE IF NOT EXISTS orders (
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER,
+  movie_id INTEGER,
+  is_completed TEXT CHECK(is_completed IN ('true', 'false')),
+  date TEXT,
+  timeslot TEXT,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (movie_id) REFERENCES movies(id),
+  FOREIGN KEY (timeslot) REFERENCES availability(movie_id)
+)`,
+    (err) => {
+      if (err) {
+        console.error(err.message);
+      }
+      console.log("orders table created.");
+    }
+  );
 
   //last comment
   console.log("Tables created and users and movies inserted");

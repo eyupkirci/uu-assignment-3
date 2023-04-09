@@ -7,7 +7,11 @@ const authController = require("../controller/authController");
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./utils/database.db");
 const dotenv = require("dotenv");
-const { getMovie, getOrderHistory } = require("../helper/fetchMovieData");
+const {
+  getMovie,
+  getOrderHistory,
+  getMovieAvailability,
+} = require("../helper/fetchMovieData");
 
 const { updateUserOrderHostory } = require("../helper/updateDatabase");
 const { check, validationResult } = require("express-validator");
@@ -16,6 +20,10 @@ dotenv.config();
 // api/user
 router.use(morgan("dev")).get("/user", authController, async (req, res) => {
   const user = req.user;
+
+  // get the order_history of a particular user.
+  const order_history = await getOrderHistory(db, req.user.id);
+
   if (user == {}) {
     res.json({
       user: {},
@@ -23,8 +31,26 @@ router.use(morgan("dev")).get("/user", authController, async (req, res) => {
   } else {
     res.json({
       user: user,
+      movies: order_history,
     });
   }
+});
+
+// api/isavailable
+router.use(morgan("dev")).post("/isavailable", async (req, res) => {
+  // Validate the incoming data
+  if (!req.body.movieId || !req.body.movieDate) {
+    res.status(400).send({ msg: "Missing required fields" });
+    return;
+  }
+
+  //get available date timeslots for the movie
+  const movieAvailabilty = await getMovieAvailability(
+    db,
+    req.body.movieId,
+    req.body.movieDate
+  );
+  res.status(200).json(movieAvailabilty);
 });
 
 // api/buy
@@ -32,16 +58,28 @@ router.use(morgan("dev")).post("/buy", authController, async (req, res) => {
   const movie = await getMovie(db, req.body.id);
 
   // Validate the incoming data
-  if (!req.user.id || !movie.id || !req.body.date || !req.body.isCompleted) {
+  if (
+    !req.user.id ||
+    !movie.id ||
+    !req.body.date ||
+    !req.body.isCompleted ||
+    !req.body.timeslot
+  ) {
     res.status(400).send("Missing required fields");
     return;
   }
 
   // insert order into orders table
   db.run(
-    `INSERT INTO orders (user_id, movie_id, date, is_completed)
-                 VALUES (?, ?, ?, ?)`,
-    [req.user.id, movie.id, req.body.date, req.body.isCompleted],
+    `INSERT INTO orders (user_id, movie_id, date, is_completed, timeslot )
+                 VALUES (?, ?, ?, ?,?)`,
+    [
+      req.user.id,
+      movie.id,
+      req.body.date,
+      req.body.isCompleted,
+      req.body.timeslot,
+    ],
     (err) => {
       if (err) {
         console.log(
