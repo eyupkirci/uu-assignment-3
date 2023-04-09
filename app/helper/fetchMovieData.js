@@ -1,16 +1,33 @@
 async function getMovies(db) {
   return new Promise((resolve, reject) => {
-    db.all("SELECT * FROM movies", (err, rows) => {
+    db.all("SELECT * FROM movies", (err, movies) => {
       if (err) {
         reject(err);
       } else {
         // Map the rows to an array of movie names and resolve the promise
-        const movies = rows.map((row) => row);
+        // const movies = rows.map((row) => row);
         resolve(movies);
       }
     });
   });
 }
+
+async function getMovieAvailability(db, movieId, movieDate) {
+  return new Promise((resolve, reject) => {
+    db.all(
+      "SELECT * FROM availability WHERE movie_id = ? AND date = ?",
+      [movieId, movieDate],
+      (err, movies) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(movies);
+        }
+      }
+    );
+  });
+}
+
 async function get10Movies(db) {
   return new Promise((resolve, reject) => {
     db.all("SELECT * FROM movies LIMIT 10", (err, rows) => {
@@ -56,4 +73,10 @@ async function getOrderHistory(db, id) {
   });
 }
 
-module.exports = { getMovies, get10Movies, getMovie, getOrderHistory };
+module.exports = {
+  getMovies,
+  get10Movies,
+  getMovie,
+  getOrderHistory,
+  getMovieAvailability,
+};

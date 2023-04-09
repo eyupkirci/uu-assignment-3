@@ -58,19 +58,15 @@
     </div>
     <script src="javascript.js"></script>
     <script>
-      const buyButtons = document.getElementsByClassName("buy-movie-button");
-      const PageButtons = document.getElementsByClassName("pagination-button");
-
+      let buyButtons = document.getElementsByClassName("buy-movie-button");
+      let PageButtons = document.getElementsByClassName("pagination-button");
+      //add modalview listener
       for (let i = 0; i < buyButtons.length; i++) {
         buyButtons[i].addEventListener("click", (e) => {
-          console.log(
-            "🚀 ~ file: home.ejs:69 ~ buyButtons[i].addEventListener ~ e:",
-            e
-          );
-          fetchMovieAvailability(e);
+          showModalView(e);
         });
       }
-
+      //add modalview listener after pagination
       for (let i = 0; i < PageButtons.length; i++) {
         PageButtons[i].addEventListener("click", (e) => {
           let id = e.target.id;
@@ -80,15 +76,9 @@
               createMovieCards(data, id);
             })
             .then(() => {
-              const buyButtons =
-                document.getElementsByClassName("buy-movie-button");
               for (let i = 0; i < buyButtons.length; i++) {
                 buyButtons[i].addEventListener("click", (e) => {
-                  console.log(
-                    "🚀 ~ file: home.ejs:69 ~ buyButtons[i].addEventListener ~ e:",
-                    e
-                  );
-                  fetchMovieAvailability(e);
+                  showModalView(e);
                 });
               }
             })
