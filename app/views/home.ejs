@@ -62,48 +62,39 @@
       const PageButtons = document.getElementsByClassName("pagination-button");
 
       for (let i = 0; i < buyButtons.length; i++) {
-        buyButtons[i].addEventListener("click", (e) =>
-          fetchMovieAvailability(e)
-        );
+        buyButtons[i].addEventListener("click", (e) => {
+          console.log(
+            "🚀 ~ file: home.ejs:69 ~ buyButtons[i].addEventListener ~ e:",
+            e
+          );
+          fetchMovieAvailability(e);
+        });
       }
 
       for (let i = 0; i < PageButtons.length; i++) {
         PageButtons[i].addEventListener("click", (e) => {
           let id = e.target.id;
-          // fetchAllMovies();
           fetch(`http://localhost:3001/api/movies`)
             .then((response) => response.json())
             .then(({ data }) => {
-              console.log(data);
               createMovieCards(data, id);
+            })
+            .then(() => {
+              const buyButtons =
+                document.getElementsByClassName("buy-movie-button");
+              for (let i = 0; i < buyButtons.length; i++) {
+                buyButtons[i].addEventListener("click", (e) => {
+                  console.log(
+                    "🚀 ~ file: home.ejs:69 ~ buyButtons[i].addEventListener ~ e:",
+                    e
+                  );
+                  fetchMovieAvailability(e);
+                });
+              }
             })
             .catch((err) => console.log(err));
         });
       }
-
-      async function fetchMovieAvailability(e) {
-        const movieId = e.target.id;
-
-        const data = await fetch(`http://localhost:3001/api/movies/${movieId}`)
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-            return data;
-          })
-          .catch((err) => console.log(err));
-        createModalView();
-        showModal(data);
-      }
-
-      // function fetchAllMovies() {
-      //   fetch(`http://localhost:3001/api/movies`)
-      //     .then((response) => response.json())
-      //     .then(({ data }) => {
-      //       console.log(data);
-      //       createMovieCards(data);
-      //     })
-      //     .catch((err) => console.log(err));
-      // }
     </script>
   </body>
 </html>

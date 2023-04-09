@@ -217,22 +217,101 @@ function createModalView() {
 }
 
 //show modal view function
-function showModal({ data }) {
+async function showModal({ data }) {
   const modal = document.getElementById("modal");
   const modalBody = document.getElementById("modal-body");
+  const user = await fetch(`http://localhost:3001/api/user`)
+    .then((response) => response.json())
+    .then(({ user }) => {
+      modalBody.innerHTML = `
+  <div id="movie-detail">
+    <div>
+      <img src="${data.imageurl}" alt="${data.title}" />
+    </div>
+    <div>
+      <h3>${data.title}</h3>
+      <p><strong>Genre:</strong> ${data.genre}</p>
+      <p><strong>Released:</strong> ${data.released}</p>
+      <p><strong>IMDb ID:</strong> ${data.imdbid}</p>
+      <p><strong>IMDb Rating:</strong> ${data.imdbrating}</p>
+      <p><strong>Description:</strong> ${data.synopsis}</p>
 
-  modalBody.innerHTML = `${data.title}`;
-  modal.style.display = "block";
+      ${
+        user.username != undefined
+          ? `
+        <form id="order-form">
+          <h3>Book a Ticket</h3>
+          <input
+            type="text"
+            name="id"
+            value="${data.id}"
+            id="movie-id"
+            style="display: none"
+            required
+          />
+          <div>
+            <label for="date">Date:</label>
+            <input type="date" name="date" id="date" required />
+          </div>
+          <div>
+            <select name="isCompleted">
+              <option value="true">Buy</option>
+              <option value="false">Book</option>
+            </select>
+          </div>
+          <button type="submit" id="movie-submit-button">Finish</button>
+        </form>
+      `
+          : `
+        <div style="text-align: center">
+          <label for="login-button">Login / Register to buy ticket</label>
+          <a href="/login" id="login-button">
+            <button>Login</button>
+          </a>
+        </div>
+      `
+      }
+    </div>
+  </div>
+`;
+
+      modal.style.display = "block";
+    })
+    .catch((err) => console.log(err));
 
   const closeBtn = document.getElementsByClassName("close")[0];
 
+  //close modal by clicking close btn
   closeBtn.onclick = () => {
     modal.style.display = "none";
   };
+  //close modal by clicking anywhere on window
 
   window.onclick = (event) => {
     if (event.target == modal) {
       modal.style.display = "none";
     }
   };
+
+  //handle order
+  const orderFinishButton = document.getElementById("movie-submit-button");
+  orderFinishButton.addEventListener("click", (e) => {
+    handleOrder(e);
+  });
+}
+
+// buy movie funciton
+async function fetchMovieAvailability(e) {
+  const movieId = e.target.id;
+
+  const data = await fetch(`http://localhost:3001/api/movies/${movieId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      return data;
+    })
+    .catch((err) => console.log(err));
+
+  createModalView();
+  showModal(data);
 }
