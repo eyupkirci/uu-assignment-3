@@ -7,15 +7,25 @@ const authController = require("../controller/authController");
 const sqlite3 = require("sqlite3").verbose();
 const db = new sqlite3.Database("./utils/database.db");
 const dotenv = require("dotenv");
-const {
-  getMovies,
-  getMovie,
-  getOrderHistory,
-} = require("../helper/fetchMovieData");
+const { getMovie, getOrderHistory } = require("../helper/fetchMovieData");
 
 const { updateUserOrderHostory } = require("../helper/updateDatabase");
 const { check, validationResult } = require("express-validator");
 dotenv.config();
+
+// api/user
+router.use(morgan("dev")).get("/user", authController, async (req, res) => {
+  const user = req.user;
+  if (user == {}) {
+    res.json({
+      user: {},
+    });
+  } else {
+    res.json({
+      user: user,
+    });
+  }
+});
 
 // api/buy
 router.use(morgan("dev")).post("/buy", authController, async (req, res) => {
@@ -84,6 +94,7 @@ router
             res.status(400).send([{ msg: "No such user" }]);
           } else {
             console.log("🚀 ~ file: api.js:77 ~ user:", user);
+
             // jwt
 
             // const isPasswordMatch = await bcrypt.compare(password, user.password);
@@ -100,6 +111,7 @@ router
               },
             };
 
+            // creates json web token
             jwt.sign(
               payload,
               process.env.TOKEN_SECRET,
@@ -120,7 +132,6 @@ router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
   const id = req.params.id;
 
   // Query the database to retrieve the movie with the specified ID
-
   db.get("SELECT * FROM movies WHERE id = ?", [id], (err, movie) => {
     if (err) {
       console.error(err.message);
