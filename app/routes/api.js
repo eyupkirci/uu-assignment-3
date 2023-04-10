@@ -11,6 +11,7 @@ const {
   getOrderHistory,
   getMovieAvailability,
   updateUserOrderHostory,
+  updateOrders,
 } = require("../helper/helperFunctions");
 
 const { check, validationResult } = require("express-validator");
@@ -70,31 +71,9 @@ router.use(morgan("dev")).post("/buy", authController, async (req, res) => {
     res.status(400).send("Missing required fields");
     return;
   }
-  const db = new sqlite3.Database("./utils/database.db");
+
   // insert the order into orders table
-  db.run(
-    `INSERT INTO orders (user_id, movie_id, date, is_completed, timeslot )
-                 VALUES (?, ?, ?, ?,?)`,
-    [
-      req.user.id,
-      movie.id,
-      req.body.date,
-      req.body.isCompleted,
-      req.body.timeslot,
-    ],
-    (err) => {
-      if (err) {
-        console.log(
-          "🚀 ~ file: api.js:38 ~ router.use ~ err.message:",
-          err.message
-        );
-        res.status(500).send("Internal server error");
-        return;
-      }
-      // insert order into orders table
-      db.close();
-    }
-  );
+  await updateOrders(req, movie);
 
   //update users table order_history column
   await updateUserOrderHostory(req.user.id);
