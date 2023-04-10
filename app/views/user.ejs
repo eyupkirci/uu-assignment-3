@@ -67,9 +67,26 @@
       </table>
     </section>
 
-    <article>
-      <% console.log("🚀 ~ file: user.ejs:71 ~ movies:", movies)%>
-    </article>
+    <section id="movie-section">
+      <% orders.forEach(order => { %>
+      <div class="movie-card" key="<%= order.movie.id %>">
+        <img
+          class="movie-card__image"
+          src="<%=order.movie.imageurl%>"
+          alt="<%= order.movie.title %> poster"
+        />
+        <div class="movie-card__info">
+          <h2 class="movie-card__title"><%= order.movie.title %></h2>
+          <p>Date: <%= order.date %> <%= order.timeslot %></p>
+          <a href="movies/<%= order.movie.id %>">
+            <button class="buy-movie-button" id="<%= order.movie.id %>">
+              Go
+            </button>
+          </a>
+        </div>
+      </div>
+      <% }) %>
+    </section>
 
     <script src="javascript.js"></script>
   </body>

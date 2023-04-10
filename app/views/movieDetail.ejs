@@ -44,48 +44,9 @@
           <p><strong>IMDb ID:</strong> <%= data.imdbid %></p>
           <p><strong>IMDb Rating:</strong> <%= data.imdbrating %></p>
           <p><strong>Description:</strong> <%= data.synopsis %></p>
-
-          <% if (user.username) { %>
-          <form id="order-form">
-            <h3>Book a Ticket</h3>
-            <input
-              type="text"
-              name="id"
-              value="<%= data.id %>"
-              id="movie-id"
-              style="display: none"
-              required
-            />
-            <div>
-              <label for="date">Date:</label>
-              <input type="date" name="date" id="date" required />
-            </div>
-            <div>
-              <select name="isCompleted">
-                <option value="true">Buy</option>
-                <option value="false">Book</option>
-              </select>
-            </div>
-            <button type="submit" id="movie-submit-button">Finish</button>
-            <% } else { %>
-            <div style="text-align: center">
-              <label for="login-button">Login / Register to buy ticket</label>
-              <a href="/login" id="login-button">
-                <button>Login</button>
-              </a>
-            </div>
-            <% } %>
-          </form>
         </div>
       </div>
     </section>
-
     <script src="/javascript.js"></script>
-    <script>
-      const orderFinishButton = document.getElementById("movie-submit-button");
-      orderFinishButton.addEventListener("click", (e) => {
-        handleOrder(e);
-      });
-    </script>
   </body>
 </html>

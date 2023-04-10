@@ -13,6 +13,7 @@ const {
   getMovies,
   getMovie,
   getOrderHistory,
+  getOrderedMovies,
 } = require("../helper/fetchMovieData");
 
 const { check, validationResult } = require("express-validator");
@@ -44,6 +45,27 @@ router.use(morgan("dev")).get("/", authController, async (req, res) => {
 // private route
 router.use(morgan("dev")).get("/user", authController, async (req, res) => {
   const order_history = await getOrderHistory(db, req.user.id);
+  const ordered_movies = await getOrderedMovies(db, order_history);
+
+  function addMovieDataToOrders(ordered_movies, order_history) {
+    const ordersWithMovies = order_history.map((order) => {
+      const movie = ordered_movies.find((m) => m.id === order.movie_id);
+      if (movie) {
+        return {
+          ...order,
+          movie,
+        };
+      }
+      return order;
+    });
+
+    return ordersWithMovies;
+  }
+
+  const orderHistoryWithMovies = await addMovieDataToOrders(
+    ordered_movies,
+    order_history
+  );
 
   if (req.user) {
     db.get("SELECT * FROM users WHERE id = ?", [req.user.id], (err, user) => {
@@ -55,11 +77,10 @@ router.use(morgan("dev")).get("/user", authController, async (req, res) => {
       } else {
         //change password display while sending back to the user.
         user = { ...user, password: "**********" };
-        console.log("userData", user, order_history);
         res.render("user", {
           title: "User Page",
           user: user,
-          movies: order_history,
+          orders: orderHistoryWithMovies,
         });
       }
     });
