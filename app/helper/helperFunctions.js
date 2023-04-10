@@ -58,7 +58,7 @@ async function getMovieAvailability(movieId, movieDate) {
         if (err) {
           reject(err);
         } else {
-          resolve(movies);
+          resolve(movies); // todo: check the result with orders
         }
         db.close();
       }
@@ -145,8 +145,40 @@ async function updateUserOrderHostory(id) {
   });
 }
 
+async function updateOrders(req, movie) {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("./utils/database.db");
+    db.run(
+      `INSERT INTO orders (user_id, movie_id, date, is_completed, timeslot )
+                 VALUES (?, ?, ?, ?,?)`,
+      [
+        req.user.id,
+        movie.id,
+        req.body.date,
+        req.body.isCompleted,
+        req.body.timeslot,
+      ],
+      (err) => {
+        if (err) {
+          console.log(
+            "🚀 ~ file: api.js:38 ~ router.use ~ err.message:",
+            err.message
+          );
+          reject(err);
+        } else {
+          resolve(`Orders for movie with ID ${movie.id} updated.`);
+        }
+
+        // insert order into orders table
+        db.close();
+      }
+    );
+  });
+}
+
 module.exports = {
   getUser,
+  updateOrders,
   getMovies,
   getMovie,
   getOrderHistory,
