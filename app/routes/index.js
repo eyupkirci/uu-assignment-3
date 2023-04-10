@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const authController = require("../controller/authController");
 const router = express.Router();
 const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("./utils/database.db"); // todo: db safe close  will be
+// const db = new sqlite3.Database("./utils/database.db"); // todo: db safe close  will be
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 
@@ -14,7 +14,7 @@ const {
   getMovie,
   getOrderHistory,
   getOrderedMovies,
-} = require("../helper/fetchMovieData");
+} = require("../helper/helperFunctions");
 
 const { check, validationResult } = require("express-validator");
 dotenv.config();
@@ -23,7 +23,7 @@ dotenv.config();
 // private & public route
 router.use(morgan("dev")).get("/", authController, async (req, res) => {
   const user = req.user;
-  const movies = await getMovies(db);
+  const movies = await getMovies();
 
   if (user == {}) {
     res.render("home", {
@@ -44,30 +44,32 @@ router.use(morgan("dev")).get("/", authController, async (req, res) => {
 // route /user
 // private route
 router.use(morgan("dev")).get("/user", authController, async (req, res) => {
-  const order_history = await getOrderHistory(db, req.user.id);
-  const ordered_movies = await getOrderedMovies(db, order_history);
-
-  function addMovieDataToOrders(ordered_movies, order_history) {
-    const ordersWithMovies = order_history.map((order) => {
-      const movie = ordered_movies.find((m) => m.id === order.movie_id);
-      if (movie) {
-        return {
-          ...order,
-          movie,
-        };
-      }
-      return order;
-    });
-
-    return ordersWithMovies;
-  }
-
-  const orderHistoryWithMovies = await addMovieDataToOrders(
-    ordered_movies,
-    order_history
-  );
+  const db = new sqlite3.Database("./utils/database.db");
 
   if (req.user) {
+    const order_history = await getOrderHistory(req.user.id);
+    const ordered_movies = await getOrderedMovies(order_history);
+
+    // merges order_history and ordered_movies in order_history
+    function addMovieDataToOrders(ordered_movies, order_history) {
+      const ordersWithMovies = order_history.map((order) => {
+        const movie = ordered_movies.find((m) => m.id === order.movie_id);
+        if (movie) {
+          return {
+            ...order,
+            movie,
+          };
+        }
+        return order;
+      });
+
+      return ordersWithMovies;
+    }
+
+    const orderHistoryWithMovies = await addMovieDataToOrders(
+      ordered_movies,
+      order_history
+    );
     db.get("SELECT * FROM users WHERE id = ?", [req.user.id], (err, user) => {
       if (err) {
         console.error(err.message);
@@ -83,6 +85,7 @@ router.use(morgan("dev")).get("/user", authController, async (req, res) => {
           orders: orderHistoryWithMovies,
         });
       }
+      db.close();
     });
   } else {
     res.status(401).send({ msg: "Authorization Required" });
@@ -97,6 +100,7 @@ router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
   const user = req.user;
 
   // Query the database to retrieve the movie with the specified ID
+  const db = new sqlite3.Database("./utils/database.db");
 
   db.get("SELECT * FROM movies WHERE id = ?", [id], (err, movie) => {
     if (err) {
@@ -111,6 +115,7 @@ router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
         user: user,
       });
     }
+    db.close();
   });
 });
 
@@ -135,8 +140,8 @@ router
       }
 
       const userData = req.body;
-      console.log("🚀 ~ file: index.js:112 ~ router.use ~ userData:", userData);
       const { email, password } = req.body;
+      const db = new sqlite3.Database("./utils/database.db");
 
       db.get(`SELECT * FROM users WHERE email = ?`, [email], (err, user) => {
         if (err) {
@@ -165,14 +170,6 @@ router
             console.error(err.message);
             res.status(500).send("Error inserting user data into the database");
           } else {
-            // db left open to keep app running
-            // db.close((err) => {
-            //   if (err) {
-            //     console.error(err.message);
-            //   }
-            //   console.log("Database connection closed");
-            // });
-
             db.get(
               `SELECT * FROM users WHERE email = ? AND password = ?`,
               [email, password],
@@ -221,6 +218,7 @@ router
               }
             );
           }
+          db.close();
         }
       );
     }

@@ -1,17 +1,22 @@
-async function getMovies(db) {
+const sqlite3 = require("sqlite3").verbose();
+
+async function getMovies() {
   return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("./utils/database.db");
     db.all("SELECT * FROM movies", (err, movies) => {
       if (err) {
         reject(err);
       } else {
         resolve(movies);
       }
+      db.close();
     });
   });
 }
 
-async function getMovie(db, id) {
+async function getMovie(id) {
   return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("./utils/database.db");
     db.get("SELECT * FROM movies WHERE id = ?", [id], (err, row) => {
       if (err) {
         reject(err);
@@ -21,12 +26,31 @@ async function getMovie(db, id) {
       } else {
         resolve(row);
       }
+      db.close();
     });
   });
 }
 
-async function getMovieAvailability(db, movieId, movieDate) {
+async function getUser(id) {
   return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("./utils/database.db");
+    db.get("SELECT * FROM users WHERE id = ?", [id], (err, row) => {
+      if (err) {
+        reject(err);
+      } else if (!row) {
+        console.log("No user found with ID", id);
+        resolve(null);
+      } else {
+        resolve(row);
+      }
+      db.close();
+    });
+  });
+}
+
+async function getMovieAvailability(movieId, movieDate) {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("./utils/database.db");
     db.all(
       "SELECT * FROM availability WHERE movie_id = ? AND date = ?",
       [movieId, movieDate],
@@ -36,13 +60,15 @@ async function getMovieAvailability(db, movieId, movieDate) {
         } else {
           resolve(movies);
         }
+        db.close();
       }
     );
   });
 }
 
-async function getOrderedMovies(db, array) {
+async function getOrderedMovies(array) {
   return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("./utils/database.db");
     let orderedMovies = [];
 
     // Use map instead of forEach to create an array of Promises that can be resolved using Promise.all
@@ -70,11 +96,13 @@ async function getOrderedMovies(db, array) {
       .catch((err) => {
         reject(err);
       });
+    db.close();
   });
 }
 
-async function getOrderHistory(db, id) {
+async function getOrderHistory(id) {
   return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("./utils/database.db");
     db.all(
       `SELECT orders.id, user_id, movie_id, orders.is_completed, orders.date, orders.timeslot FROM orders JOIN movies ON orders.movie_id = movies.id JOIN users ON orders.user_id = users.id WHERE users.id = ?`,
       [id],
@@ -84,15 +112,45 @@ async function getOrderHistory(db, id) {
         } else {
           resolve(movies);
         }
+        db.close();
+      }
+    );
+  });
+}
+
+async function updateUserOrderHostory(id) {
+  return new Promise((resolve, reject) => {
+    const db = new sqlite3.Database("./utils/database.db");
+    db.run(
+      `
+    UPDATE users
+    SET order_history = (
+      SELECT GROUP_CONCAT(m.title, ', ') 
+      FROM orders o
+      JOIN movies m ON o.movie_id = m.id 
+      WHERE o.user_id = ?
+    )
+    WHERE id = ?
+  `,
+      [id, id],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(`Order history for user with ID ${id} updated.`);
+        }
+        db.close();
       }
     );
   });
 }
 
 module.exports = {
+  getUser,
   getMovies,
   getMovie,
   getOrderHistory,
   getOrderedMovies,
   getMovieAvailability,
+  updateUserOrderHostory,
 };

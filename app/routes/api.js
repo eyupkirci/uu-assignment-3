@@ -5,15 +5,14 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 const authController = require("../controller/authController");
 const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("./utils/database.db");
 const dotenv = require("dotenv");
 const {
   getMovie,
   getOrderHistory,
   getMovieAvailability,
-} = require("../helper/fetchMovieData");
+  updateUserOrderHostory,
+} = require("../helper/helperFunctions");
 
-const { updateUserOrderHostory } = require("../helper/updateDatabase");
 const { check, validationResult } = require("express-validator");
 dotenv.config();
 
@@ -21,9 +20,10 @@ dotenv.config();
 router.use(morgan("dev")).get("/user", authController, async (req, res) => {
   const user = req.user;
 
-  // get the order_history of a particular user.
-  const order_history = await getOrderHistory(db, req.user.id);
+  // gets the order_history of a particular user.
+  const order_history = await getOrderHistory(req.user.id);
 
+  // sends user data to client
   if (user == {}) {
     res.json({
       user: {},
@@ -44,18 +44,20 @@ router.use(morgan("dev")).post("/isavailable", async (req, res) => {
     return;
   }
 
-  //get available date timeslots for the movie
+  //gets available date timeslots for the movie
   const movieAvailabilty = await getMovieAvailability(
-    db,
     req.body.movieId,
     req.body.movieDate
   );
+
+  // sends available date timeslots data to client
+
   res.status(200).json(movieAvailabilty);
 });
 
 // api/buy
 router.use(morgan("dev")).post("/buy", authController, async (req, res) => {
-  const movie = await getMovie(db, req.body.id);
+  const movie = await getMovie(req.body.id);
 
   // Validate the incoming data
   if (
@@ -68,8 +70,8 @@ router.use(morgan("dev")).post("/buy", authController, async (req, res) => {
     res.status(400).send("Missing required fields");
     return;
   }
-
-  // insert order into orders table
+  const db = new sqlite3.Database("./utils/database.db");
+  // insert the order into orders table
   db.run(
     `INSERT INTO orders (user_id, movie_id, date, is_completed, timeslot )
                  VALUES (?, ?, ?, ?,?)`,
@@ -89,14 +91,16 @@ router.use(morgan("dev")).post("/buy", authController, async (req, res) => {
         res.status(500).send("Internal server error");
         return;
       }
+      // insert order into orders table
+      db.close();
     }
   );
 
   //update users table order_history column
-  updateUserOrderHostory(db, req.user.id);
+  await updateUserOrderHostory(req.user.id);
 
   // get the order_history of a particular user.
-  const order_history = await getOrderHistory(db, req.user.id);
+  const order_history = await getOrderHistory(req.user.id);
 
   res.status(201).send({ msg: "Successfully done", movies: order_history });
 });
@@ -120,6 +124,7 @@ router
       console.log("🚀 ~ file: index.js:57 ~ password:", password);
 
       // hash pass
+      const db = new sqlite3.Database("./utils/database.db");
 
       db.get(
         `SELECT * FROM users WHERE email = ? AND password = ?`,
@@ -160,6 +165,7 @@ router
               }
             );
           }
+          db.close();
         }
       );
     }
@@ -168,6 +174,8 @@ router
 //api/movies/:id
 router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
   const id = req.params.id;
+
+  const db = new sqlite3.Database("./utils/database.db");
 
   // Query the database to retrieve the movie with the specified ID
   db.get("SELECT * FROM movies WHERE id = ?", [id], (err, movie) => {
@@ -181,11 +189,13 @@ router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
         data: movie,
       });
     }
+    db.close();
   });
 });
 
 router.use(morgan("dev")).get("/movies", (req, res) => {
   // Query the database to retrieve the movies
+  const db = new sqlite3.Database("./utils/database.db");
 
   db.all("SELECT * FROM movies", (err, movies) => {
     if (err) {
@@ -198,6 +208,7 @@ router.use(morgan("dev")).get("/movies", (req, res) => {
         data: movies,
       });
     }
+    db.close();
   });
 });
 

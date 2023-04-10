@@ -1,18 +1,14 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
-// const config = require("config");
 
 module.exports = function (req, res, next) {
   // Get token from cookies
   const token = req.cookies.token;
-  console.log("authController", req.cookies);
 
   // Check if no token
   if (!token) {
     req.user = {};
-    console.log("🚀 ~ file: authController.js:14 ~ req.body:", req.body);
-
     next();
   } else {
     // Verify token
