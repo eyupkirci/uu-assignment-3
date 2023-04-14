@@ -108,6 +108,7 @@ db.serialize(async () => {
     }
   );
 
+  //insert available timeslots of the movies in availability table
   db.all("SELECT * FROM movies", (err, rows) => {
     if (err) {
       console.error(err.message);
