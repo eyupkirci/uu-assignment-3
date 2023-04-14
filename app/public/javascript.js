@@ -5,6 +5,8 @@ const HOSTNAME =
     ? window.location.origin
     : window.location.origin + "/group45";
 
+console.log("🚀 ~ file: javascript.js:4 ~ HOSTNAME:", HOSTNAME);
+
 const handleLogin = (e) => {
   e.preventDefault();
   const formData = new FormData(loginForm);
