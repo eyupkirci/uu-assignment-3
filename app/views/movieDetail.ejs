@@ -6,31 +6,7 @@
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <header>
-      <nav>
-        <div id="nav_logo">
-          <h2>MovieTickets.com</h2>
-        </div>
-        <label for="drop" class="toggle">
-          <img
-            id="toggle_img"
-            src="/assets/menu-burger.png"
-            alt="Header menu"
-            width="24px"
-          />
-        </label>
-        <input type="checkbox" id="drop" />
-        <ul class="menu" id="header-menu">
-          <li><a href="/">Home</a></li>
-          <% if (user.username) { %>
-          <li><a href="/user"><%= user.username %></a></li>
-          <li><a href="/api/logout" id="logout-button">Logout</a></li>
-          <% } else { %>
-          <li><a href="/login" id="login-button">Login</a></li>
-          <% } %>
-        </ul>
-      </nav>
-    </header>
+    <%- include('components/header.ejs', { user: user }) %>
 
     <section>
       <div id="movie-detail">
@@ -47,6 +23,9 @@
         </div>
       </div>
     </section>
+
+    <%- include('components/footer.ejs')%>
+
     <script src="/javascript.js"></script>
   </body>
 </html>

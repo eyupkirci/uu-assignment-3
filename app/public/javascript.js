@@ -1,13 +1,16 @@
-// console.log("javascript.js");
-
 //FUNCTIONS
+
+const HOSTNAME =
+  window.location.hostname === "localhost"
+    ? window.location.origin
+    : window.location.origin + "/group45/";
 
 const handleLogin = (e) => {
   e.preventDefault();
   const formData = new FormData(loginForm);
   const data = Object.fromEntries(formData.entries());
 
-  fetch("http://localhost:3001/api/login", {
+  fetch(`${HOSTNAME}/api/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=UTF-8",
@@ -27,13 +30,17 @@ const handleLogin = (e) => {
         );
         console.log(mesText);
         emailError.innerText = mesText[0]?.msg;
+
+        if (response?.errors[0]?.msg) {
+          alert(response?.errors[0]?.msg);
+        }
       }
     });
 };
 
 const handleLogout = () => {
   if (confirm("Are you sure you want to log out?")) {
-    fetch("http://localhost:3001/api/logout", {
+    fetch(`${HOSTNAME}/api/logout`, {
       method: "GET",
       mode: "no-cors",
       headers: {
@@ -68,7 +75,7 @@ const handleOrder = (e) => {
     }
   }
 
-  fetch("http://localhost:3001/api/buy", {
+  fetch(`${HOSTNAME}/api/buy`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=UTF-8",
@@ -81,6 +88,7 @@ const handleOrder = (e) => {
         console.log("No response data:", response);
       } else {
         alert(`Movie Sccesfully Booked!`);
+        window.location.href = "/";
       }
     })
     .catch((error) => {
@@ -103,7 +111,7 @@ const handleRegister = (e) => {
   }
   data.order_history = "";
 
-  fetch("http://localhost:3001/register", {
+  fetch(`${HOSTNAME}/api/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=UTF-8",
@@ -119,7 +127,6 @@ const handleRegister = (e) => {
           response.data
         );
       }
-      console.log("we get here");
       window.location.href = "/";
     })
     .catch((error) => console.log(error));
@@ -227,7 +234,7 @@ function handleAvailabilty(e) {
   const movieId = e.target.closest("#movie-detail").getAttribute("key");
   const movieDate = document.getElementById("date").value;
 
-  fetch("http://localhost:3001/api/isavailable", {
+  fetch(`${HOSTNAME}/api/isavailable`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=UTF-8",
@@ -264,15 +271,15 @@ function handleAvailabilty(e) {
 async function movieInModal({ data }) {
   const modal = document.getElementById("modal");
   const modalBody = document.getElementById("modal-body");
-  const user = await fetch(`http://localhost:3001/api/user`)
+  const user = await fetch(`${HOSTNAME}/api/user`)
     .then((response) => response.json())
     .then(({ user }) => {
       modalBody.innerHTML = `
-  <div id="movie-detail" key=${data.id}>
-    <div>
+      <div id="movie-detail" key=${data.id}>
+      <div>
       <img src="${data.imageurl}" alt="${data.title}" />
-    </div>
-    <div>
+      </div>
+      <div>
       <h3>${data.title}</h3>
       <p><strong>Genre:</strong> ${data.genre}</p>
       <p><strong>Released:</strong> ${data.released}</p>
@@ -286,25 +293,23 @@ async function movieInModal({ data }) {
         <form id="order-form">
           <h3>Book a Ticket</h3>
           <input
-            type="text"
+            type="hidden"
             name="id"
             value="${data.id}"
             id="movie-id"
-            style="display: none"
-            required
           />
-          <div>
+          <p>
             <label for="date">Date:</label>
             <input type="date" name="date" id="date" required />
             <button id='check-availability-button'> Availability</button>
-          </div>
-          <div id="movie-timeslots-div"></div>
-          <div>
+          </p>
+          <p id="movie-timeslots-div"></p>
+          <p>
             <select name="isCompleted">
               <option value="true">Buy</option>
               <option value="false">Book</option>
             </select>
-          </div>
+          </p>
           <button type="submit" id="movie-submit-button">Finish</button>
         </form>
       `
@@ -317,8 +322,8 @@ async function movieInModal({ data }) {
         </div>
       `
       }
-    </div>
-  </div>
+        </div>
+        </div>
 `;
 
       modal.style.display = "block";
@@ -359,7 +364,7 @@ async function movieInModal({ data }) {
 async function showModalView(e) {
   const movieId = e.target.id;
 
-  const data = await fetch(`http://localhost:3001/api/movies/${movieId}`)
+  const data = await fetch(`${HOSTNAME}/api/movies/${movieId}`)
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
@@ -369,4 +374,22 @@ async function showModalView(e) {
 
   createModalView();
   movieInModal(data);
+}
+
+//handle panination
+function handlePagination(e) {
+  let id = e.target.id;
+  fetch(`${HOSTNAME}/api/movies`)
+    .then((response) => response.json())
+    .then(({ data }) => {
+      createMovieCards(data, id);
+    })
+    .then(() => {
+      for (let i = 0; i < buyButtons.length; i++) {
+        buyButtons[i].addEventListener("click", (e) => {
+          showModalView(e);
+        });
+      }
+    })
+    .catch((err) => console.log(err));
 }

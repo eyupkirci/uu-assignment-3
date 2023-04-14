@@ -6,31 +6,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header>
-      <nav>
-        <div id="nav_logo">
-          <h2>MovieTickets.com</h2>
-        </div>
-        <label for="drop" class="toggle">
-          <img
-            id="toggle_img"
-            src="assets/menu-burger.png"
-            alt="Header menu"
-            width="24px"
-          />
-        </label>
-        <input type="checkbox" id="drop" />
-        <ul class="menu" id="header-menu">
-          <li><a href="/">Home</a></li>
-          <% if (user.username) { %>
-          <li><a href="/user"><%= user.username %></a></li>
-          <li><a href="/api/logout" id="logout-button">Logout</a></li>
-          <% } else { %>
-          <li><a href="/login" id="login-button">Login</a></li>
-          <% } %>
-        </ul>
-      </nav>
-    </header>
+    <%- include('components/header.ejs', { user: user }) %>
 
     <section id="movie-section">
       <% let counter = 0 %> <% movies.forEach(movie => { %> <% if (counter < 10)
@@ -56,6 +32,9 @@
       <button class="pagination-button" id="<%=i%>"><%= i + 1 %></button>
       <% } %>
     </div>
+
+    <%- include('components/footer.ejs')%>
+
     <script src="javascript.js"></script>
     <script>
       let buyButtons = document.getElementsByClassName("buy-movie-button");
@@ -69,20 +48,7 @@
       //add modalview listener after pagination
       for (let i = 0; i < PageButtons.length; i++) {
         PageButtons[i].addEventListener("click", (e) => {
-          let id = e.target.id;
-          fetch(`http://localhost:3001/api/movies`)
-            .then((response) => response.json())
-            .then(({ data }) => {
-              createMovieCards(data, id);
-            })
-            .then(() => {
-              for (let i = 0; i < buyButtons.length; i++) {
-                buyButtons[i].addEventListener("click", (e) => {
-                  showModalView(e);
-                });
-              }
-            })
-            .catch((err) => console.log(err));
+          handlePagination(e);
         });
       }
     </script>
