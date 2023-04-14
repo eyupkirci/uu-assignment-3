@@ -30,6 +30,7 @@ router.use(morgan("dev")).get("/", authController, async (req, res) => {
       title: "Home Page",
       movies: movies,
       user: {},
+      host,
     });
   } else {
     res.render("home", {
