@@ -13,7 +13,7 @@
     </label>
     <input type="checkbox" id="drop" />
     <ul class="menu" id="header-menu">
-      <li><a href="/">Home</a></li>
+      <li><a href="<%=host%>/">Home</a></li>
       <% if (user.username) { %>
       <li><a href="<%=host%>/user"><%= user.username %></a></li>
       <li><a href="<%=host%>/api/logout" id="logout-button">Logout</a></li>
