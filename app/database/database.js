@@ -19,7 +19,7 @@ db.serialize(async () => {
     order_history TEXT
   )`);
 
-  // Insert 5  users
+  //insert 5 users
   for (const user of users) {
     //hashing passwords before creatiin
     const salt = await bcrypt.genSalt(10);
@@ -46,8 +46,10 @@ db.serialize(async () => {
       }
     );
   }
+});
 
-  // Create users table
+db.serialize(async () => {
+  // Create movies table
   db.run(
     `CREATE TABLE IF NOT EXISTS movies (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -163,8 +165,8 @@ db.serialize(async () => {
     }
   );
 
-  // db.close();
-
   //last comment
   console.log("Tables created and users and movies inserted");
 });
+
+// db.close();
