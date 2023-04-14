@@ -20,7 +20,6 @@ const handleLogin = (e) => {
     .then((response) => response.json())
     .then((response) => {
       if (response.token) {
-        localStorage.setItem("token", response.token);
         document.cookie = `token=${response.token}`;
         window.location.href = HOSTNAME;
       } else {
@@ -55,7 +54,7 @@ const handleLogout = () => {
       .then(() => (window.location.href = HOSTNAME))
       .catch((error) => console.error(error));
   }
-  location.href = "/";
+  window.location.href = HOSTNAME;
 };
 
 const handleOrder = (e) => {
