@@ -117,6 +117,7 @@ const handleRegister = (e) => {
           response.data
         );
       }
+      document.cookie = `token=${response.token}`;
       window.location.href = HOSTNAME;
     })
     .catch((error) => console.log(error));
