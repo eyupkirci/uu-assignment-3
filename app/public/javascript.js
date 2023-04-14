@@ -3,7 +3,7 @@
 const HOSTNAME =
   window.location.hostname === "localhost"
     ? window.location.origin
-    : window.location.origin + "/group45";
+    : `${window.location.origin}/group45`;
 
 console.log("🚀 ~ file: javascript.js:4 ~ HOSTNAME:", HOSTNAME);
 
