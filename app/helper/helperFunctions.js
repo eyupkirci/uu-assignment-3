@@ -118,33 +118,6 @@ async function getOrderHistory(id) {
   });
 }
 
-async function updateUserOrderHostory(id) {
-  return new Promise((resolve, reject) => {
-    const db = new sqlite3.Database("./utils/database.db");
-    db.run(
-      `
-    UPDATE users
-    SET order_history = (
-      SELECT GROUP_CONCAT(m.title, ', ') 
-      FROM orders o
-      JOIN movies m ON o.movie_id = m.id 
-      WHERE o.user_id = ?
-    )
-    WHERE id = ?
-  `,
-      [id, id],
-      (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(`Order history for user with ID ${id} updated.`);
-        }
-        db.close();
-      }
-    );
-  });
-}
-
 async function updateOrders(req, movie) {
   return new Promise((resolve, reject) => {
     const db = new sqlite3.Database("./utils/database.db");
@@ -184,5 +157,4 @@ module.exports = {
   getOrderHistory,
   getOrderedMovies,
   getMovieAvailability,
-  updateUserOrderHostory,
 };

@@ -1,11 +1,12 @@
 const sqlite3 = require("sqlite3").verbose();
 const movies = require("./movies");
 const users = require("./users");
+const bcrypt = require("bcryptjs");
 
 // Set up db
 const db = new sqlite3.Database("./database.db");
 
-db.serialize(() => {
+db.serialize(async () => {
   // Create users table
   db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,29 +19,33 @@ db.serialize(() => {
     order_history TEXT
   )`);
 
-  // Insert 5  users
-  for (const user of users) {
-    db.run(
-      `INSERT INTO users (name, email, username, password, address, credit_card, order_history)
-    VALUES  (?, ?, ?, ?, ?, ?, ?)`,
-      [
-        user.name,
-        user.email,
-        user.username,
-        user.password,
-        user.address,
-        user.credit_card,
-        user.order_history,
-      ],
-      (err) => {
-        if (err) {
-          console.error(err.message);
-        } else {
-          console.log(`User ${user.name} inserted into the database`);
-        }
-      }
-    );
-  }
+  // // Insert 5  users
+  // for (const user of users) {
+  //   //hashing passwords before creatiin
+  //   const salt = await bcrypt.genSalt(10);
+  //   user.password = await bcrypt.hash(user.password, salt);
+  //   //inserting users onto db
+  //   db.run(
+  //     `INSERT INTO users (name, email, username, password, address, credit_card, order_history)
+  //   VALUES  (?, ?, ?, ?, ?, ?, ?)`,
+  //     [
+  //       user.name,
+  //       user.email,
+  //       user.username,
+  //       user.password,
+  //       user.address,
+  //       user.credit_card,
+  //       user.order_history,
+  //     ],
+  //     (err) => {
+  //       if (err) {
+  //         console.error(err.message);
+  //       } else {
+  //         console.log(`User ${user.name} inserted into the database`);
+  //       }
+  //     }
+  //   );
+  // }
 
   // Create users table
   db.run(
@@ -157,6 +162,8 @@ db.serialize(() => {
       console.log("orders table created.");
     }
   );
+
+  // db.close();
 
   //last comment
   console.log("Tables created and users and movies inserted");
