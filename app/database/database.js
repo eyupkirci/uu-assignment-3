@@ -19,33 +19,33 @@ db.serialize(async () => {
     order_history TEXT
   )`);
 
-  // // Insert 5  users
-  // for (const user of users) {
-  //   //hashing passwords before creatiin
-  //   const salt = await bcrypt.genSalt(10);
-  //   user.password = await bcrypt.hash(user.password, salt);
-  //   //inserting users onto db
-  //   db.run(
-  //     `INSERT INTO users (name, email, username, password, address, credit_card, order_history)
-  //   VALUES  (?, ?, ?, ?, ?, ?, ?)`,
-  //     [
-  //       user.name,
-  //       user.email,
-  //       user.username,
-  //       user.password,
-  //       user.address,
-  //       user.credit_card,
-  //       user.order_history,
-  //     ],
-  //     (err) => {
-  //       if (err) {
-  //         console.error(err.message);
-  //       } else {
-  //         console.log(`User ${user.name} inserted into the database`);
-  //       }
-  //     }
-  //   );
-  // }
+  // Insert 5  users
+  for (const user of users) {
+    //hashing passwords before creatiin
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+    //inserting users onto db
+    db.run(
+      `INSERT INTO users (name, email, username, password, address, credit_card, order_history)
+    VALUES  (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        user.name,
+        user.email,
+        user.username,
+        user.password,
+        user.address,
+        user.credit_card,
+        user.order_history,
+      ],
+      (err) => {
+        if (err) {
+          console.error(err.message);
+        } else {
+          console.log(`User ${user.name} inserted into the database`);
+        }
+      }
+    );
+  }
 
   // Create users table
   db.run(
