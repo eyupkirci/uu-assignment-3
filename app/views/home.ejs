@@ -36,21 +36,6 @@
     <%- include('components/footer.ejs')%>
 
     <script src="javascript.js"></script>
-    <script>
-      let buyButtons = document.getElementsByClassName("buy-movie-button");
-      let PageButtons = document.getElementsByClassName("pagination-button");
-      //add modalview listener
-      for (let i = 0; i < buyButtons.length; i++) {
-        buyButtons[i].addEventListener("click", (e) => {
-          showModalView(e);
-        });
-      }
-      //add modalview listener after pagination
-      for (let i = 0; i < PageButtons.length; i++) {
-        PageButtons[i].addEventListener("click", (e) => {
-          handlePagination(e);
-        });
-      }
-    </script>
+    <script></script>
   </body>
 </html>

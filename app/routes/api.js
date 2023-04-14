@@ -161,8 +161,6 @@ router
         }
       );
 
-      res.redirect("/");
-
       db.close();
     }
   );
