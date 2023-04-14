@@ -88,11 +88,23 @@ router
     "/register",
     [
       check("email", "Please include a valid email!").isEmail(),
-      check("password", "Password is required!").exists(),
+      check("password", "Password is required!")
+        .exists()
+        .isLength({ min: 8 })
+        .withMessage("Password Must Be at Least 8 Characters")
+        .matches("[0-9]")
+        .withMessage("Password Must Contain a Number")
+        .matches("[A-Z]")
+        .withMessage("Password Must Contain an Uppercase Letter")
+        .matches("[a-z]")
+        .withMessage("Password Must Contain an Lowercase Letter"),
       check("address", "Address is required!").exists(),
       check("username", "Username is required!").exists(),
       check("name", "Name is required!").exists(),
-      check("credit_card", "Credit card is required!").exists(),
+      check("credit_card", "Credit card is required!")
+        .exists()
+        .matches("[0-9]")
+        .withMessage("Credit Card Number Must Contain from Numbers"),
     ],
     async (req, res) => {
       //validation
@@ -104,6 +116,7 @@ router
       const userData = req.body;
       const db = new sqlite3.Database("./utils/database.db");
 
+      //check if the email exists in db
       db.get(
         `SELECT * FROM users WHERE email = ?`,
         [userData.email],
@@ -140,14 +153,14 @@ router
             console.error(err.message);
             res.status(500).send("Error inserting user data into the database");
           } else {
-            //jwt starts
+            //jwt payload
             const payload = {
               user: {
                 username: userData.username,
                 id: this.lastID,
               },
             };
-
+            //jwt assignment
             jwt.sign(
               payload,
               process.env.TOKEN_SECRET,
@@ -175,23 +188,19 @@ router
       check("password", "Password is required!").exists(),
     ],
     async (req, res) => {
+      //validation
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
 
-      // const salt = await bcrypt.genSalt(10);
-      // const hashedPassword = await bcrypt.hash(req.body.password, salt);
-
-      // hash pass
       const db = new sqlite3.Database("./utils/database.db");
 
+      // checks if the user exists
       db.get(
         `SELECT * FROM users WHERE email = ?`,
         [req.body.email],
         async (err, user) => {
-          console.log("🚀 ~ file: api.js:208 ~ user:", user);
-
           if (err) {
             res.status(500).send("Server error");
           }
@@ -208,7 +217,7 @@ router
                 .json({ errors: [{ msg: "Invalid Credentials!" }] });
             }
 
-            // jwt
+            // jwt payload
 
             const payload = {
               user: {
