@@ -22,7 +22,7 @@ const handleLogin = (e) => {
       if (response.token) {
         localStorage.setItem("token", response.token);
         document.cookie = `token=${response.token}`;
-        window.location.href = "/";
+        window.location.href = HOSTNAME;
       } else {
         const emailError = document.getElementById("email-error");
         const mesText = response.errors.filter(
@@ -52,7 +52,7 @@ const handleLogout = () => {
           console.log("User logged out!");
         }
       })
-      .then(() => (window.location.href = "/"))
+      .then(() => (window.location.href = HOSTNAME))
       .catch((error) => console.error(error));
   }
   location.href = "/";
@@ -88,7 +88,7 @@ const handleOrder = (e) => {
         console.log("No response data:", response);
       } else {
         alert(`Movie Sccesfully Booked!`);
-        window.location.href = "/";
+        window.location.href = HOSTNAME;
       }
     })
     .catch((error) => {
@@ -127,7 +127,7 @@ const handleRegister = (e) => {
           response.data
         );
       }
-      window.location.href = "/";
+      window.location.href = HOSTNAME;
     })
     .catch((error) => console.log(error));
 };
