@@ -321,7 +321,7 @@ async function movieInModal({ data }) {
           : `
         <div style="text-align: center">
           <label for="login-button">Login / Register to buy ticket</label>
-          <a href="/api/login" id="login-button">
+          <a href="&{HOSTNAME}/api/login" id="login-button">
             <button>Login</button>
           </a>
         </div>
