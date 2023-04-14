@@ -46,7 +46,7 @@ router.use(morgan("dev")).get("/", authController, async (req, res) => {
 // route /user
 // private route
 router.use(morgan("dev")).get("/user", authController, async (req, res) => {
-  const db = new sqlite3.Database("./utils/database.db");
+  const db = new sqlite3.Database("./database/database.db");
 
   if (req.user) {
     const order_history = await getOrderHistory(req.user.id);
@@ -103,7 +103,7 @@ router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
   const user = req.user;
 
   // Query the database to retrieve the movie with the specified ID
-  const db = new sqlite3.Database("./utils/database.db");
+  const db = new sqlite3.Database("./database/database.db");
 
   db.get("SELECT * FROM movies WHERE id = ?", [id], (err, movie) => {
     if (err) {

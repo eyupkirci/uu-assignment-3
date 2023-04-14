@@ -114,7 +114,7 @@ router
       }
 
       const userData = req.body;
-      const db = new sqlite3.Database("./utils/database.db");
+      const db = new sqlite3.Database("./database/database.db");
 
       //check if the email exists in db
       db.get(
@@ -194,7 +194,7 @@ router
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const db = new sqlite3.Database("./utils/database.db");
+      const db = new sqlite3.Database("./database/database.db");
 
       // checks if the user exists
       db.get(
@@ -247,7 +247,7 @@ router
 router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
   const id = req.params.id;
 
-  const db = new sqlite3.Database("./utils/database.db");
+  const db = new sqlite3.Database("./database/database.db");
 
   // Query the database to retrieve the movie with the specified ID
   db.get("SELECT * FROM movies WHERE id = ?", [id], (err, movie) => {
@@ -267,7 +267,7 @@ router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
 
 router.use(morgan("dev")).get("/movies", (req, res) => {
   // Query the database to retrieve the movies
-  const db = new sqlite3.Database("./utils/database.db");
+  const db = new sqlite3.Database("./database/database.db");
 
   db.all("SELECT * FROM movies", (err, movies) => {
     if (err) {
