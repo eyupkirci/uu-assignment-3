@@ -18,6 +18,7 @@ const {
 const { check, validationResult } = require("express-validator");
 dotenv.config();
 
+const host = process.env.HOSTNAME;
 /* GET home page. */
 // private & public route
 router.use(morgan("dev")).get("/", authController, async (req, res) => {
@@ -35,6 +36,7 @@ router.use(morgan("dev")).get("/", authController, async (req, res) => {
       title: "Home Page",
       movies: movies,
       user: user,
+      host,
     });
   }
 });
@@ -82,6 +84,7 @@ router.use(morgan("dev")).get("/user", authController, async (req, res) => {
           title: "User Page",
           user: user,
           orders: orderHistoryWithMovies,
+          host,
         });
       }
       db.close();
@@ -112,6 +115,7 @@ router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
         title: "Movie Detail",
         data: movie,
         user: user,
+        host,
       });
     }
     db.close();
@@ -121,13 +125,13 @@ router.use(morgan("dev")).get("/movies/:id", authController, (req, res) => {
 /* GET login page. */
 // public route
 router.use(morgan("dev")).get("/login", (req, res) => {
-  res.render("login", { title: "Login Page", user: {} });
+  res.render("login", { title: "Login Page", user: {}, host });
 });
 
 /* GET lgin page. */
 // public route
 router.use(morgan("dev")).get("/register", (req, res) => {
-  res.render("register", { title: "Register Page", user: {} });
+  res.render("register", { title: "Register Page", user: {}, host });
 });
 
 module.exports = router;
