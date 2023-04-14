@@ -20,7 +20,7 @@
         <div class="movie-card__info">
           <h2 class="movie-card__title"><%= movie.title %></h2>
           <p class="movie-card__imdb">IMDb Rating: <%= movie.imdbrating %></p>
-          <a href="movies/<%= movie.id %>"> </a>
+          <a href="<%=host%>/movies/<%= movie.id %>"> </a>
           <button class="buy-movie-button" id="<%= movie.id %>">Buy</button>
         </div>
       </div>
