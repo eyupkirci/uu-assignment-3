@@ -110,15 +110,29 @@ const handleRegister = (e) => {
   })
     .then((response) => response.json())
     .then((response) => {
-      console.log(response);
-      if (!response.ok) {
+      if (response?.token) {
         console.log(
           "🚀 ~ file: register.ejs:102 ~ .then ~ response.data:",
-          response.data
+          response
         );
+        document.cookie = `token=${response.token}`;
+        window.location.href = HOSTNAME;
+      } else {
+        console.log("🚀 elseeeee:", response);
+
+        const emailError = document.getElementById("email-error");
+        const emailErrorText = response.errors.filter(
+          (item) => item.param === "email"
+        );
+
+        emailError.innerText = emailErrorText[0]?.msg || "";
+
+        const passwordError = document.getElementById("password-error");
+        const passwordErrorText = response.errors.filter(
+          (item) => item.param === "password"
+        );
+        passwordError.innerText = passwordErrorText[0]?.msg || "";
       }
-      document.cookie = `token=${response.token}`;
-      window.location.href = HOSTNAME;
     })
     .catch((error) => console.log(error));
 };
