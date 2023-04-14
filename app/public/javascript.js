@@ -37,22 +37,13 @@ const handleLogin = (e) => {
     });
 };
 
-const handleLogout = () => {
-  if (confirm("Are you sure you want to log out?")) {
-    fetch(`${HOSTNAME}/api/logout`, {
-      method: "GET",
-      mode: "no-cors",
-      headers: {
-        "Content-Type": "application/json;charset=UTF-8",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("User logged out!");
-        }
-      })
-      .then(() => (window.location.href = HOSTNAME))
-      .catch((error) => console.error(error));
+const handleLogout = (e) => {
+  // e.preventDefault();
+  console.log("🚀 ~ file: javascript.js:41 ~ handleLogout ~ handleLogout:");
+
+  const decision = confirm("Are you sure you want to log out?");
+  if (decision) {
+    document.cookie = `token=""`;
   }
   window.location.href = HOSTNAME;
 };
@@ -392,3 +383,22 @@ function handlePagination(e) {
     })
     .catch((err) => console.log(err));
 }
+
+let buyButtons = document.getElementsByClassName("buy-movie-button");
+let PageButtons = document.getElementsByClassName("pagination-button");
+//add modalview listener
+for (let i = 0; i < buyButtons.length; i++) {
+  buyButtons[i].addEventListener("click", (e) => {
+    showModalView(e);
+  });
+}
+//add modalview listener after pagination
+for (let i = 0; i < PageButtons.length; i++) {
+  PageButtons[i].addEventListener("click", (e) => {
+    handlePagination(e);
+  });
+}
+
+document.getElementById("logout-button").addEventListener("click", (e) => {
+  handleLogout(e);
+});
