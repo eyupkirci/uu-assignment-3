@@ -57,6 +57,6 @@ app.use((req, res) => {
 });
 
 //listen
-app.listen((PORT = 3001), () => {
+app.listen((PORT = process.env.PORT || 3001), () => {
   console.log(`Server listening on port http://localhost:${PORT}`);
 });
