@@ -5,7 +5,7 @@
 //     ? window.location.origin
 //     : `${window.location.origin}/group45/`;
 
-const HOSTNAME = "https://movieticketapp-a1sbh4r9w-eypk.vercel.app";
+const HOSTNAME = "https:/movieticketapp.vercel.app";
 
 console.log("🚀 ~ file: javascript.js:4 ~ HOSTNAME:", HOSTNAME);
 
