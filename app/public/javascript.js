@@ -1,9 +1,11 @@
 //FUNCTIONS
 
-const HOSTNAME =
-  window.location.hostname === "localhost"
-    ? window.location.origin
-    : `${window.location.origin}/group45/`;
+// const HOSTNAME =
+//   window.location.hostname === "localhost"
+//     ? window.location.origin
+//     : `${window.location.origin}/group45/`;
+
+const HOSTNAME = "https://movieticketapp.vercel.app/";
 
 console.log("🚀 ~ file: javascript.js:4 ~ HOSTNAME:", HOSTNAME);
 
