@@ -1,10 +1,6 @@
-Group id: 045
+Group id: 045 
 
-Names and student numbers of author: 
-7771282 Eyup Kirci
-
-full URL: http://webtech.science.uu.nl/group45/ 
-
+Names and student numbers of author: 7771282 Eyup Kirci
 
 The movie ticket app is an application designed to allow users to display movies and to buy movie tickets online. It provides a simple and efficient way for movie lovers to search for movies, select showtimes, and purchase tickets with ease. The app is built using various technologies and libraries, including Express.js, EJS, and SQLite3, to enable efficient data management and handling. Users can sign up and create an account, log in, and purchase tickets using secure payment methods. 
 
